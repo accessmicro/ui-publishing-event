@@ -1,85 +1,103 @@
-<script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
+<script lang="ts" setup>
+import { Button, Menu } from 'ant-design-vue'
+import { MailOutlined, SmileOutlined, MenuFoldOutlined } from '@ant-design/icons-vue'
+import type { MenuProps } from 'ant-design-vue'
+import { h, onMounted, ref, watch } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { decodeCredential } from 'vue3-google-login'
+
+// DEFINE DATA
+const route = useRoute()
+const router = useRouter()
+const userData = ref(JSON.parse(localStorage.getItem('user') || '{}'));
+watch(route, (to, from) => {
+  selectedKeys.value = [to.path === "/" ? "/esm" : to.path];
+  to.path === "/" && router.push("/esm");
+})
+const items = ref<MenuProps['items']>([
+  {
+    key: '/esm',
+    icon: h(MailOutlined),
+    title: 'ESM',
+    label: h(RouterLink, { to: '/esm' }, 'ESM')
+  },
+  {
+    key: '/life-care',
+    icon: h(SmileOutlined),
+    title: 'LifeCare',
+    label: h(RouterLink, { to: '/life-care' }, 'LifeCare')
+  }
+])
+const selectedKeys = ref<string[]>([route.path])
+const isCollapsedNav = ref<boolean>(true)
+
+// EVENT HANDLER
+const handleClick = (e: any) => {
+  selectedKeys.value = [e.key]
+}
+
+const handleToggleNav = () => {
+  isCollapsedNav.value = !isCollapsedNav.value
+}
+
+// LIFE CYCLE HOOKS
+onMounted(() => {
+  // const accessToken = localStorage.getItem('access_token')
+  // if (!accessToken) {
+  //   router.push('/login')
+  // }
+  // const userData: any = decodeCredential(accessToken!)
+  // if (userData?.email !== "vanlung99@gmail.com") {
+  //   router.push('/login')
+  // }
+});
+const handleLogout = () => {
+  localStorage.clear()
+  router.push('/login')
+}
 </script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-
-      <nav>
-        <RouterLink to="/">Home</RouterLink>
-        <RouterLink to="/about">About</RouterLink>
-      </nav>
+  <div v-if="route.path !== '/login'" class="nav-wrapper" style="width: 256px">
+    <Menu class="nav" mode="inline" theme="light" :items="items" @click="handleClick" :selected-keys="selectedKeys"
+      :inline-collapsed="isCollapsedNav" />
+    <div class="nav-bottom">
+      <Button type="primary" :class="['toggle-nav-btn', isCollapsedNav && 'close']" @click="handleToggleNav">
+        <MenuFoldOutlined />
+      </Button>
     </div>
-  </header>
-
-  <RouterView />
+  </div>
+  <div class="flex-1 min-h-screen p-4 relative">
+    <RouterView />
+    <a-avatar class="fixed top-4 right-4 cursor-pointer" :size="64" v-if="route.path !== '/login'"
+      :src="userData.picture" @dblclick="handleLogout"></a-avatar>
+  </div>
 </template>
+<style scoped lang="postcss">
+.nav-wrapper {
+  @apply flex flex-col h-screen justify-between transition-all duration-300 sticky top-0;
 
-<style scoped>
-header {
-  line-height: 1.5;
-  max-height: 100vh;
+  &:has(.ant-menu-inline-collapsed) {
+    @apply w-[80px] !important;
+  }
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+.nav {
+  @apply flex-1;
 }
 
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-top: 2rem;
+.nav-bottom {
+  @apply absolute bottom-2 left-2 right-2;
 }
 
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
+.toggle-nav-btn {
+  @apply w-full flex justify-center items-center;
 
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
+  span {
+    @apply transition-transform duration-300;
   }
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
+  &.close span {
+    @apply rotate-180;
   }
 }
 </style>
