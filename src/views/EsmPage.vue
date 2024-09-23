@@ -3,12 +3,14 @@ import { Button, DatePicker, Form, Input, Select, Typography } from 'ant-design-
 import { reactive, ref, toRaw } from 'vue';
 import templateStr from '../../templateString';
 import { DoubleLeftOutlined } from '@ant-design/icons-vue';
+import type { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 
 const formState = reactive({
   size_banner: '',
   base_url: '',
   count: undefined,
-  date: undefined,
+  date: dayjs().startOf('day'),
 });
 
 const isExpandView = ref(false);
@@ -21,7 +23,9 @@ const onSubmit = () => {
   formRef.value
     .validate()
     .then(() => {
-      console.log('values', formState, toRaw(formState));
+      const data = toRaw(formState);
+      const date = (data.date! as Dayjs).format('YYYY년 MM월 DD일');
+      console.log(`😮‍💨 ~ date:`, date);
       template.value = templateStr
     })
     .catch((error: any) => {
@@ -30,7 +34,6 @@ const onSubmit = () => {
 };
 
 const onLoadIframe = (e: any) => {
-  console.log('e', e)
   const iframeDoc = e.target.contentDocument || e.target.contentWindow.document;
   const style = document.createElement('style');
   style.innerHTML = `
@@ -75,7 +78,7 @@ const handleExpandView = () => {
             <Input v-model:value="formState.base_url" />
           </Form.Item>
           <Form.Item name="count" :rules="[{ required: true, message: 'Required!' }]" label="Count image">
-            <Input v-model:value="formState.count" type="number" />
+            <Input v-model:value="formState.count" type="number" :min="0" />
           </Form.Item>
           <Form.Item name="date" label="Date footer" :rules="[{ required: true, message: 'Required!' }]">
             <DatePicker v-model:value="formState.date" class="w-full" />
