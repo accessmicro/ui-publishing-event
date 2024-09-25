@@ -66,7 +66,7 @@ const handleLogout = () => {
       </Button>
     </div>
   </div>
-  <div class="flex-1 min-h-screen p-4 relative">
+  <div class="flex-1 min-h-screen p-4 relative bg-slate-100">
     <RouterView />
     <!-- <a-avatar class="fixed top-4 right-4 cursor-pointer" :size="64" v-if="route.path !== '/login'"
       :src="userData.picture" @dblclick="handleLogout"></a-avatar> -->

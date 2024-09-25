@@ -291,7 +291,8 @@ const handleSaveFile = () => {
         </Form>
       </div>
       <div class="highlight" :style="{ minHeight: formState.size_banner }">
-        <div class="sticky top-0 px-2 py-2 bg-[#ffffff88] backdrop-blur flex gap-3">
+        <div class="sticky top-0 px-2 py-2 bg-[#ffffff88] backdrop-blur flex gap-3"
+          :style="!template && { display: 'none' }">
           <Button v-show="!!template" shape="circle" class="btn-func" @click="handleExpandView">
             <DoubleLeftOutlined :class="isExpandView && 'rotate-180'" />
           </Button>
