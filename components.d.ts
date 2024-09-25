@@ -8,8 +8,8 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     AAvatar: typeof import('ant-design-vue/es')['Avatar']
-    AButton: typeof import('ant-design-vue/es')['Button']
     AFormItem: typeof import('ant-design-vue/es')['FormItem']
+    ATextarea: typeof import('ant-design-vue/es')['Textarea']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     IconCommunity: typeof import('./src/components/icons/IconCommunity.vue')['default']
     IconDocumentation: typeof import('./src/components/icons/IconDocumentation.vue')['default']

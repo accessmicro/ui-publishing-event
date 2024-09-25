@@ -68,8 +68,8 @@ const handleLogout = () => {
   </div>
   <div class="flex-1 min-h-screen p-4 relative">
     <RouterView />
-    <a-avatar class="fixed top-4 right-4 cursor-pointer" :size="64" v-if="route.path !== '/login'"
-      :src="userData.picture" @dblclick="handleLogout"></a-avatar>
+    <!-- <a-avatar class="fixed top-4 right-4 cursor-pointer" :size="64" v-if="route.path !== '/login'"
+      :src="userData.picture" @dblclick="handleLogout"></a-avatar> -->
   </div>
 </template>
 <style scoped lang="postcss">

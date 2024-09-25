@@ -3,7 +3,14 @@ export default {
   purge: ['./index.html', './src/**/*.{vue,js,ts,jsx,tsx}'],
   content: [],
   theme: {
-    extend: {}
+    extend: {
+      flexGrow: {
+        2: '2',
+      },
+      flexShrink: {
+        2: '2',
+      },
+    }
   },
   plugins: []
 }
