@@ -78,9 +78,6 @@ const onLoadIframe = (e: any) => {
       -ms-overflow-style: none;
       background-color: red;
     }
-      #body-table > tbody > tr > td {
-        background-color: #f0f0f0;
-      }
     ::-webkit-scrollbar {
       display: none;
     }
@@ -259,7 +256,7 @@ const handleSaveFile = () => {
 <template>
   <main class="">
     <Typography.Title>EMS Page</Typography.Title>
-    <div class="wrapper">
+    <div class="wrapper" :style="isExpandView && { gap: '0' }">
       <div class="form-inner" :class="isExpandView ? 'w-0 overflow-hidden' : 'flex-1'">
         <Form ref="formRef" :class="['form-wrapper', isExpandView && 'hidden']" layout="vertical" :model="formState"
           :label-col="{ span: 24 }" :wrapper-col="{ span: 24 }" autocomplete="off">
@@ -307,7 +304,7 @@ const handleSaveFile = () => {
 </template>
 <style scoped lang="postcss">
 .wrapper {
-  @apply flex relative gap-[50px];
+  @apply flex relative gap-8;
 }
 
 .form-inner {
@@ -315,8 +312,7 @@ const handleSaveFile = () => {
 }
 
 .form-wrapper {
-  position: sticky;
-  top: 20px;
+  @apply sticky top-[20px];
 }
 
 .highlight {

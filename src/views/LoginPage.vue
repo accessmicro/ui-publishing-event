@@ -39,7 +39,7 @@ const callback: CallbackTypes.CodeResponseCallback = (response: any) => {
   if (userData?.email === "vanlung99@gmail.com") {
     showMessage('success', 'SUCCESS');
     timerId = setTimeout(() => {
-      router.push('/esm')
+      router.push('/ems')
     }, 1500);
   } else {
     console.log("FAILED");

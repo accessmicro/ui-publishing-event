@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Esm from '../views/EsmPage.vue'
+import EmsPage from '../views/EmsPage.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,9 +14,9 @@ const router = createRouter({
       name: '',
       children: [
         {
-          path: 'esm',
-          name: 'esm',
-          component: Esm
+          path: 'ems',
+          name: 'ems',
+          component: EmsPage
         },
         {
           path: 'life-care',

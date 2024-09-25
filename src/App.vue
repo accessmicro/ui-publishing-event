@@ -11,15 +11,15 @@ const route = useRoute()
 const router = useRouter()
 const userData = ref(JSON.parse(localStorage.getItem('user') || '{}'));
 watch(route, (to, from) => {
-  selectedKeys.value = [to.path === "/" ? "/esm" : to.path];
-  to.path === "/" && router.push("/esm");
+  selectedKeys.value = [to.path === "/" ? "/ems" : to.path];
+  to.path === "/" && router.push("/ems");
 })
 const items = ref<MenuProps['items']>([
   {
-    key: '/esm',
+    key: '/ems',
     icon: h(MailOutlined),
-    title: 'ESM',
-    label: h(RouterLink, { to: '/esm' }, 'ESM')
+    title: 'EMS',
+    label: h(RouterLink, { to: '/ems' }, 'EMS')
   },
   {
     key: '/life-care',
