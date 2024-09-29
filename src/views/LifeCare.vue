@@ -18,7 +18,7 @@ type IFormState = {
   count_image?: number;
 }
 
-interface ICustomGridItemData extends GridItemData {
+export interface ICustomGridItemData extends GridItemData {
   label?: string;
   src_image?: string;
 }
@@ -148,7 +148,7 @@ const convertData = async (data: any) => {
           w: item.width,
           h: item.height,
           i: `image_${item.index}`,
-          label: `Image ${item.index}`,
+          label: `${item.index}`,
           src_image: item.src,
         });
         currentX += item.width;
@@ -162,7 +162,7 @@ const convertData = async (data: any) => {
         w: size_screen,
         h: cur.height,
         i: `image_${cur.index}`,
-        label: `Image ${cur.index}`,
+        label: `${cur.index}`,
         src_image: cur.src,
       });
       currentHeight += cur.height;
@@ -173,9 +173,9 @@ const convertData = async (data: any) => {
 }
 // HOOKS
 watch(gridItemData, (newVal, oldVal) => {
-  console.log('WATCH GRID ITEM DATA');
-  console.table(newVal)
-  console.log("_______");
+  // console.log('WATCH GRID ITEM DATA');
+  // console.table(newVal)
+  // console.log("_______");
 }, { deep: true });
 </script>
 
@@ -202,38 +202,29 @@ watch(gridItemData, (newVal, oldVal) => {
         </Form.Item>
       </Form>
     </div>
-    <div class="highlight" :style="{}">
-      <div v-show="isShowHighlight" class="sticky top-0 px-2 py-2 bg-[#ffffff88] backdrop-blur flex gap-3"
+    <div class="highlight flex flex-col items-center" :style="{}">
+      <div v-show="isShowHighlight" class="sticky w-full z-10 top-0 px-2 py-2 bg-[#ffffff88] backdrop-blur flex gap-3"
         :style="!isShowHighlight && { display: 'none' }">
         <Button shape="circle" class="btn-func" @click="handleExpandView">
           <DoubleLeftOutlined :class="isExpandView && 'rotate-180'" />
         </Button>
-        <Button class="btn-func" shape="circle" @click="">
+        <Button class="btn-func" shape="circle" @click="() => { }">
           <DownloadOutlined />
         </Button>
       </div>
-      <div class="highlight-inner" :style="{ minWidth: formState.size_screen }">
-          <grid-layout
-              :layout.sync="gridItemData"
-              :col-num="formState.size_screen"
-              :row-height="1"
-              :is-draggable="false"
-              :is-resizable="false"
-              :is-mirrored="false"
-              :use-css-transforms="false"
-              :margin="[0, 0]"
-      >
-  
-          <grid-item v-for="item in gridItemData"
-                     :x="item.x"
-                     :y="item.y"
-                     :w="item.w"
-                     :h="item.h"
-                     :i="item.i"
-                     :key="item.i">
-              <img :src="item.src_image" :alt="item.label" class="w-full h-auto" />
-          </grid-item>
-      </grid-layout>
+      <div class="highlight-inner"
+        :style="{ 'min-width': `${formState.size_screen}px`, 'max-width': `${formState.size_screen}px` }">
+        <div class="">
+          <grid-layout v-bind:layout="gridItemData" :col-num="formState.size_screen" :row-height="1"
+            :is-draggable="false" :is-resizable="false" :is-mirrored="false" :use-css-transforms="false"
+            :margin="[0, 0]">
+
+            <grid-item v-for="item in gridItemData" :x="item.x" :y="item.y" :w="item.w" :h="item.h" :i="item.i"
+              :key="item.i">
+              <base-grid-item :item="item"></base-grid-item>
+            </grid-item>
+          </grid-layout>
+        </div>
       </div>
       <!-- <iframe :srcdoc="template" frameborder="0" @load="onLoadIframe" style="width: 100%;"></iframe> -->
     </div>
