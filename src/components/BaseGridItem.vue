@@ -5,7 +5,7 @@
       <div
         v-for="(item, index) in formState.absolute"
         :key="index"
-        class="size-[50px] bg-[#cd6a6a51] absolute top-0 left-0 select-none flex justify-center items-center text-white text-[48px] cursor-grab"
+        class="size-[50px] bg-[#cd6a6a51] absolute top-0 left-0 select-none flex justify-center items-center text-black text-[48px] cursor-grab"
         @dblclick="(e) => handleOpenOptions(e, index)"
         @mousedown.prevent="(e) => handleStartDrag(e, index)"
         @mousemove="(e) => handleMouseMove(e, index)"
@@ -18,7 +18,9 @@
         }"
       >
         {{ index + 1 }}
-        <div class="size-5 absolute right-0 bottom-0 bg-black"></div>
+        <div class="size-5 absolute right-0 bottom-0">
+          <icon-resize-right-bottom />
+        </div>
         <div class="absolute inset-0"></div>
       </div>
     </div>
@@ -112,6 +114,7 @@
 </template>
 <script lang="ts" setup>
 import { computed, defineProps, reactive, ref, watch } from 'vue'
+import IconResizeRightBottom from './icons/IconResizeRightBottom.vue'
 import type { ICustomGridItemData } from '../views/LifeCare.vue'
 import {
   Popover,
@@ -127,9 +130,6 @@ import {
 const props = defineProps<{
   item: ICustomGridItemData
 }>()
-
-const _vv = ref<any>('')
-
 const timerId = ref<any | null>(null)
 const timerOpenOptions = ref<any | null>(null)
 const indexAbsoluteModal = ref<any>(null)
@@ -289,7 +289,7 @@ const handleAddAbsoluteLink = () => {
 function handleOpenOptions(e: MouseEvent, index: number) {
   timerOpenOptions.value = setTimeout(() => {
     indexAbsoluteModal.value = index
-  }, 500)
+  }, 150)
 }
 
 function handleCloseModal() {
