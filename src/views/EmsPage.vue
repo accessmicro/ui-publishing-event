@@ -106,8 +106,8 @@ const getTemplate = async ({ base_url, count, extension = "png", size_banner, da
       img.onload = function () {
         resolve({
           index,
-          height: this.height,
-          width: this.width,
+          height: (this as any).height,
+          width: (this as any).width,
           src: imageUrl,
           link: links[index],
         });
@@ -159,9 +159,9 @@ const getTemplate = async ({ base_url, count, extension = "png", size_banner, da
                 <img src="https://image2.lglifecare.com/ems/ems_${size_banner}@85_header.png" width="${size_banner}" height="85" alt="lifecare" style="border: 0; outline: none; text-decoration: none; vertical-align: top; -ms-interpolation-mode: bicubic;">
               </a>
             </td>
-          </tr>\n`.replaceAll("{{link_logo}}", link_logo);
+          </tr>\n`.replace("{{link_logo}}", link_logo!);
 
-  const formDataStr = formData.map((item, index) => {
+  const formDataStr = formData.map((item: any, index: number) => {
     if (Array.isArray(item)) {
       const templateRowLink = `<td width="{{width}}" style="-ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; border-collapse: collapse;">
       <a href="{{link}}" target="_blank" title="event" style="-ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; display: inline-block; text-decoration: none;">
@@ -180,10 +180,10 @@ const getTemplate = async ({ base_url, count, extension = "png", size_banner, da
           .map((cell) => {
             let cellTemplate = cell.link ? templateRowLink : templateRow;
             return cellTemplate
-              .replaceAll("{{src}}", cell.src)
-              .replaceAll("{{width}}", cell.width)
-              .replaceAll("{{height}}", cell.height)
-              .replaceAll("{{link}}", cell.link);
+              .replace(/{{src}}/g, cell.src)
+              .replace(/{{width}}/g, cell.width)
+              .replace(/{{height}}/g, cell.height)
+              .replace(/{{link}}/g, cell.link);
           })
           .join("\n") +
         `</tr>
@@ -206,10 +206,10 @@ const getTemplate = async ({ base_url, count, extension = "png", size_banner, da
           </tr>`;
       let templateRow = item.link ? templateRowLinkFull : templateRowFull;
       return templateRow
-        .replaceAll("{{src}}", item.src)
-        .replaceAll("{{size_banner}}", item.width)
-        .replaceAll("{{height}}", item.height)
-        .replaceAll("{{link}}", item.link);
+        .replace(/{{src}}/g, item.src)
+        .replace(/{{size_banner}}/g, item.width)
+        .replace(/{{height}}/g, item.height)
+        .replace(/{{link}}/g, item.link);
     }
   });
   template += formDataStr.join("\n");
