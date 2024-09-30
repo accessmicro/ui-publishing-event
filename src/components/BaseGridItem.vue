@@ -13,8 +13,8 @@
         :style="{
           top: `${item.y}px`,
           left: `${item.x}px`,
-          width: `${item.width}px`,
-          height: `${item.height}px`
+          width: `${item.w}px`,
+          height: `${item.h}px`
         }"
       >
         {{ index + 1 }}
@@ -40,7 +40,7 @@
             <template v-if="formState.isFullImage">
               <div class="flex flex-col gap-y-1">
                 <span class="">Link: </span>
-                <Input v-model:value="formState.full.link" :allow-clear="true" />
+                <Input v-model:value.trim="formState.full.link" :allow-clear="true" />
               </div>
               <div class="flex flex-col gap-y-1">
                 <span class="">Target blank: </span>
@@ -53,7 +53,7 @@
               </div>
               <div class="flex flex-col gap-y-1">
                 <span class="">Span blind: </span>
-                <Input v-model:value="formState.full.spanBlind" :allow-clear="true" />
+                <Input v-model:value.trim="formState.full.spanBlind" :allow-clear="true" />
               </div>
             </template>
             <template v-else>
@@ -94,7 +94,7 @@
       <span>{{ item.label_position }}</span>
       <div class="flex flex-col gap-y-1">
         <span class="">Link: </span>
-        <Input v-model:value="item.link" :allow-clear="true" />
+        <Input v-model:value.trim="item.link" :allow-clear="true" />
       </div>
       <div class="flex flex-col gap-y-1">
         <span class="">Target blank: </span>
@@ -107,7 +107,7 @@
       </div>
       <div class="flex flex-col gap-y-1 mb-4">
         <span class="">Span blind: </span>
-        <Input v-model:value="item.spanBlind" :allow-clear="true" />
+        <Input v-model:value.trim="item.spanBlind" :allow-clear="true" />
       </div>
     </template>
   </Modal>
@@ -128,13 +128,16 @@ import {
 } from 'ant-design-vue'
 
 const props = defineProps<{
-  item: ICustomGridItemData
-}>()
+  item: ICustomGridItemData,
+  isGetNewData: boolean,
+}>();
+const emits = defineEmits(['onGetData'])
 const timerId = ref<any | null>(null)
 const timerOpenOptions = ref<any | null>(null)
 const indexAbsoluteModal = ref<any>(null)
 const formState = reactive({
-  isFullImage: false,
+  isFullImage: true,
+  src: props.item.src_image,
   full: {
     isTargetBlank: false,
     link: '',
@@ -203,25 +206,23 @@ function handleMouseMove(e: MouseEvent, index: number) {
     // formState.absolute[index].y = ((y / infoParent.height) * 100.0).toFixed(2)
     formState.absolute[index].x = x
     formState.absolute[index].y = y
-    formState.absolute[index].label_position = `{${getPositionAbsoluteWithPercent({
+    formState.absolute[index].label_position = `position: absolute;${getPositionAbsoluteWithPercent({
       child: x,
       parent: formState.absolute[index].parent_width,
       key: 'left'
-    })} ${getPositionAbsoluteWithPercent({
+    })}${getPositionAbsoluteWithPercent({
       child: y,
       parent: formState.absolute[index].parent_height,
       key: 'top'
-    })}
-    ${getPositionAbsoluteWithPercent({
+    })}${getPositionAbsoluteWithPercent({
       key: 'width',
-      child: formState.absolute[index].width,
+      child: formState.absolute[index].w,
       parent: formState.absolute[index].parent_width
-    })}
-    ${getPositionAbsoluteWithPercent({
+    })}${getPositionAbsoluteWithPercent({
       key: 'height',
-      child: formState.absolute[index].height,
+      child: formState.absolute[index].h,
       parent: formState.absolute[index].parent_height
-    })}}`
+    })}`
     timerId.value = setTimeout(() => {
       handleStopAction(e)
     }, 1000)
@@ -231,28 +232,25 @@ function handleMouseMove(e: MouseEvent, index: number) {
     if (infoAbsolute.currentWidth + deltaX < 25 || infoAbsolute.currentHeight + deltaY < 25) {
       return
     }
-    formState.absolute[index].width = infoAbsolute.currentWidth + deltaX
-    formState.absolute[index].height = infoAbsolute.currentHeight + deltaY
-    formState.absolute[index].label_position = `{${getPositionAbsoluteWithPercent({
+    formState.absolute[index].w = infoAbsolute.currentWidth + deltaX
+    formState.absolute[index].h = infoAbsolute.currentHeight + deltaY
+    formState.absolute[index].label_position = `position: absolute;${getPositionAbsoluteWithPercent({
       child: formState.absolute[index].x,
       parent: formState.absolute[index].parent_width,
       key: 'left'
-    })}
-    ${getPositionAbsoluteWithPercent({
+    })}${getPositionAbsoluteWithPercent({
       child: formState.absolute[index].y,
       parent: formState.absolute[index].parent_height,
       key: 'top'
-    })}
-    ${getPositionAbsoluteWithPercent({
+    })}${getPositionAbsoluteWithPercent({
       key: 'width',
-      child: formState.absolute[index].width,
+      child: formState.absolute[index].w,
       parent: formState.absolute[index].parent_width
-    })}
-    ${getPositionAbsoluteWithPercent({
+    })}${getPositionAbsoluteWithPercent({
       key: 'height',
-      child: formState.absolute[index].height,
+      child: formState.absolute[index].h,
       parent: formState.absolute[index].parent_height
-    })}}`
+    })}`
     timerId.value = setTimeout(() => {
       handleStopAction(e)
     }, 1000)
@@ -281,8 +279,8 @@ const handleAddAbsoluteLink = () => {
     spanBlind: '',
     x: 0,
     y: 0,
-    width: 50,
-    height: 50
+    w: 50,
+    h: 50
   })
 }
 
@@ -314,7 +312,8 @@ const randomBgColor = () => {
   for (let i = 0; i < 6; i++) {
     color += letters[Math.floor(Math.random() * 16)]
   }
-  return 'transparent'
+  // return 'transparent'
+  return `${color}7c`
 }
 // WATCH
 watch(formState.absolute, (val) => {}, { deep: true })
@@ -330,6 +329,27 @@ watch(
     }
   }
 )
+watch(
+  () => props.isGetNewData,
+  (val) => {
+    const { isFullImage, absolute, full, src } = formState;
+    emits("onGetData", {
+        isFullImage,
+        absolute,
+        full,
+        src,
+      })
+  }
+)
+
+watch(
+  () => props.item,
+  (val) => {
+    formState.src = val.src_image
+  },
+  { immediate: true }
+)
+
 </script>
 
 
