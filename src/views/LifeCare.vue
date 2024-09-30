@@ -367,7 +367,7 @@ watch(
 
 <template>
   <Typography.Title class="">Lifecare Page</Typography.Title>
-  <div class="wrapper" :style="isExpandView && { gap: '0' }">
+  <div class="flex relative gap-8" :style="isExpandView && { gap: '0' }">
     <div class="form-inner" :class="isExpandView ? 'w-0 overflow-hidden flex-grow-0 flex-shrink-0' : 'flex-1 min-w-[300px]'">
       <Form ref="formRef" :class="['form-wrapper', isExpandView && 'hidden']" layout="vertical" :model="formState"
         :label-col="{ span: 24 }" :wrapper-col="{ span: 24 }" autocomplete="off">
@@ -439,10 +439,6 @@ watch(
 </template>
 
 <style scoped lang="postcss">
-.wrapper {
-  @apply flex relative gap-8;
-}
-
 .form-inner {
   @apply transition-all duration-300;
 }
