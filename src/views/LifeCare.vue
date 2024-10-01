@@ -3,9 +3,9 @@ import { Typography, Form, Button, Select, Input, message, Switch, Textarea } fr
 import { computed, reactive, ref, toRaw, watch } from 'vue'
 import { DoubleLeftOutlined, CopyOutlined, DownloadOutlined } from '@ant-design/icons-vue'
 import { GridLayout, GridItem } from 'vue3-grid-layout-next'
-import { saveAs } from "file-saver";
-import { MO_MAIN_TEMPLATE, PC_MAIN_TEMPLATE } from '@/data/lifecare';
-import dayjs from 'dayjs';
+import { saveAs } from 'file-saver'
+import { MO_MAIN_TEMPLATE, PC_MAIN_TEMPLATE } from '@/data/lifecare'
+import dayjs from 'dayjs'
 // import type { GridItemData } from "vue-grid-layout";
 interface GridItemData {
   x: number
@@ -19,8 +19,8 @@ type IFormState = {
   title?: string
   size_screen?: number
   base_url?: string
-  count_image?: number,
-  data: any[],
+  count_image?: number
+  data: any[]
   formDataTemplate: any[]
   isCustomListImageLink?: boolean
   listCustomLink?: string
@@ -38,7 +38,7 @@ const initialFormState: IFormState = {
   data: [],
   formDataTemplate: [],
   isCustomListImageLink: false,
-  listCustomLink: ""
+  listCustomLink: ''
 }
 
 const screenSizes = [
@@ -83,7 +83,7 @@ const TEMPLATE_DEFAULT = {
     max-width: 100%;
     height: auto;
   }
-</style>`,
+</style>`
   }
 }
 
@@ -94,6 +94,7 @@ const isExpandView = ref(false)
 const isShowHighlight = ref(true)
 const template = ref('')
 const isGetGridItemData = ref(false)
+const isSaveBosFile = ref(false)
 const formState = reactive<IFormState>({
   size_screen: 1184,
   base_url: 'https://image2.lglifecare.com/cnsEvent/202409/52598/pc_',
@@ -111,7 +112,6 @@ const customListImage = computed(() => {
   return formState.listCustomLink!.split('\n').map((item) => item.trim())
 })
 
-
 // METHODS
 const handleExpandView = () => {
   isExpandView.value = !isExpandView.value
@@ -127,15 +127,18 @@ const handleSubmit = () => {
       convertData()
     })
     .catch((error: any) => {
-      message.error(error);
+      message.error(error)
     })
 }
 
 const convertData = async () => {
-  const { base_url, count_image, size_screen, isCustomListImageLink } = formState as Required<IFormState>
-  const listImageUrls = isCustomListImageLink ? customListImage.value : Array.from({ length: count_image }).map((item, index) => {
-    return `${base_url}${index < 9 ? '0' + (index + 1) : index + 1}.png`
-  })
+  const { base_url, count_image, size_screen, isCustomListImageLink } =
+    formState as Required<IFormState>
+  const listImageUrls = isCustomListImageLink
+    ? customListImage.value
+    : Array.from({ length: count_image }).map((item, index) => {
+        return `${base_url}${index < 9 ? '0' + (index + 1) : index + 1}.png`
+      })
   const getAllSizeImagePromise = listImageUrls.map((imageUrl, index) => {
     return new Promise((resolve, reject) => {
       const img = new Image()
@@ -220,36 +223,41 @@ function handleToggleGetDataGriItem() {
     return
   }
   isGetGridItemData.value = !isGetGridItemData.value
+  isSaveBosFile.value = true
 }
 
-function onGetData({
-  index,
-  data,
-}: {
-  index: number,
-  data: any
-}) {
+function onGetData({ index, data }: { index: number; data: any }) {
+  console.log('GET_DATA', index)
   formState.data[index] = data
 }
 
-const handleSaveFile = ({
-  template,
-  nameFile,
-}: {
-  template: string,
-  nameFile?: string
-}) => {
-  const blob = new Blob([template], { type: 'text/html' });
-  saveAs(blob, nameFile || `${formState.size_screen === 1080 ? 'mo' : 'pc'}_bos_${formState.base_url!.split('/').reverse()[1]}.html`);
+const handleSaveFile = ({ template, nameFile }: { template: string; nameFile?: string }) => {
+  const blob = new Blob([template], { type: 'text/html' })
+  saveAs(
+    blob,
+    nameFile ||
+      `${formState.size_screen === 1080 ? 'mo' : 'pc'}_bos_${
+        formState.base_url!.split('/').reverse()[1]
+      }.html`
+  )
 }
 
 const handleDownloadMainFile = () => {
-  const mainTemplate = formState.size_screen === 1080 ? MO_MAIN_TEMPLATE : PC_MAIN_TEMPLATE;
+  const mainTemplate = formState.size_screen === 1080 ? MO_MAIN_TEMPLATE : PC_MAIN_TEMPLATE
   handleSaveFile({
-    template: mainTemplate.replace('{{bos_file_path}}', `/uxtech/linkpage/${dayjs().startOf('day').format("YYYYMM")}/include/${formState.size_screen === 1080 ? 'mo' : 'pc'}_bos_${formState.base_url!.split('/').reverse()[1]}.html`).replace('{{title}}', formState.title || ''),
-    nameFile: `${formState.base_url!.split('/').reverse()[1]}_${dayjs().startOf('day').format("MMDD")}.html`
+    template: mainTemplate
+      .replace(
+        '{{bos_file_path}}',
+        `/uxtech/linkpage/${dayjs().startOf('day').format('YYYYMM')}/include/${
+          formState.size_screen === 1080 ? 'mo' : 'pc'
+        }_bos_${formState.base_url!.split('/').reverse()[1]}.html`
+      )
+      .replace('{{title}}', formState.title || ''),
+    nameFile: `${formState.base_url!.split('/').reverse()[1]}_${dayjs()
+      .startOf('day')
+      .format('MMDD')}.html`
   })
-} 
+}
 // HOOKS
 watch(
   () => formState.data,
@@ -259,7 +267,6 @@ watch(
       clearTimeout(timerId.value)
     }
     if (newVal.length === formState.count_image) {
-      console.log('newVal', newVal)
       timerId.value = setTimeout(() => {
         const data = formState.formDataTemplate.map((item, index) => {
           if (Array.isArray(item)) {
@@ -275,8 +282,7 @@ watch(
             ...newVal.find((val: any) => val.src === item.src)
           }
         })
-        let templateStr = '';
-        console.log('data', data)
+        let templateStr = ''
         data.forEach((item, index) => {
           if (Array.isArray(item)) {
             const listItemInGrid = item.map((subItem: any, subIndex: number) => {
@@ -285,19 +291,28 @@ watch(
                   return TEMPLATE_DEFAULT.fullHaveLink
                     .replace('{{src}}', subItem.src)
                     .replace('{{link}}', subItem.full.link)
-                    .replace('{{target_blank}}', subItem.full.isTargetBlank ? 'target="_blank"' : '')
+                    .replace(
+                      '{{target_blank}}',
+                      subItem.full.isTargetBlank ? 'target="_blank"' : ''
+                    )
                     .replace('{{spanBlind}}', subItem.full.spanBlind || '')
                 } else {
                   return TEMPLATE_DEFAULT.fullNotLink.replace('{{src}}', subItem.src)
                 }
               } else {
-                const listAbsoluteLinkStr = subItem.absolute.map((absoluteItem: any, index: number) => {
-                  return TEMPLATE_DEFAULT.onlyLink
-                    .replace('{{link}}', absoluteItem.link)
-                    .replace('{{position}}', absoluteItem.label_position || 'position: absolute;')
-                    .replace('{{target_blank}}', absoluteItem.isTargetBlank ? 'target="_blank"' : '')
-                    .replace('{{spanBlind}}', absoluteItem.spanBlind || '')
-                })
+                const listAbsoluteLinkStr = subItem.absolute.map(
+                  (absoluteItem: any, index: number) => {
+                    let position = absoluteItem.label_position.replace(/\n/g, '')
+                    return TEMPLATE_DEFAULT.onlyLink
+                      .replace('{{link}}', absoluteItem.link)
+                      .replace('{{position}}', position || 'position: absolute;')
+                      .replace(
+                        '{{target_blank}}',
+                        absoluteItem.isTargetBlank ? 'target="_blank"' : ''
+                      )
+                      .replace('{{spanBlind}}', absoluteItem.spanBlind || '')
+                  }
+                )
                 return TEMPLATE_DEFAULT.absoluteLinks
                   .replace('{{src}}', subItem.src)
                   .replace('{{list_link}}', listAbsoluteLinkStr.join(''))
@@ -319,11 +334,11 @@ watch(
                 templateStr += TEMPLATE_DEFAULT.fullNotLink.replace('{{src}}', src)
               }
             } else {
-              console.log('absolute', absolute)
               const listAbsoluteLinkStr = absolute.map((absoluteItem: any, index: number) => {
+                let position = absoluteItem.label_position.replace(/\n/g, '')
                 return TEMPLATE_DEFAULT.onlyLink
                   .replace('{{link}}', absoluteItem.link)
-                  .replace('{{position}}', absoluteItem.label_position || 'position: absolute;')
+                  .replace('{{position}}', position || 'position: absolute;')
                   .replace('{{target_blank}}', absoluteItem.isTargetBlank ? 'target="_blank"' : '')
                   .replace('{{spanBlind}}', absoluteItem.spanBlind || '')
               })
@@ -333,12 +348,20 @@ watch(
             }
           }
         })
-        templateStr = TEMPLATE_DEFAULT.root.replace('{{template}}', templateStr).replace('{{style}}', TEMPLATE_DEFAULT.style[formState.size_screen === 1080 ? 'mo' : 'pc'])
-        handleSaveFile({
-          template: templateStr,
-          nameFile: `${formState.size_screen === 1080 ? 'mo' : 'pc'}_bos_${formState.base_url!.split('/').reverse()[1]}.html`
-        })
-
+        templateStr = TEMPLATE_DEFAULT.root
+          .replace('{{template}}', templateStr)
+          .replace(
+            '{{style}}',
+            TEMPLATE_DEFAULT.style[formState.size_screen === 1080 ? 'mo' : 'pc']
+          )
+        isSaveBosFile.value &&
+          handleSaveFile({
+            template: templateStr,
+            nameFile: `${formState.size_screen === 1080 ? 'mo' : 'pc'}_bos_${
+              formState.base_url!.split('/').reverse()[1]
+            }.html`
+          })
+        isSaveBosFile.value = false
       }, 1000)
     }
   },
@@ -349,7 +372,6 @@ watch(
   () => template,
   (newVal, oldVal) => {
     if (newVal.value) {
-      console.log('template', newVal)
     }
   }
 )
@@ -362,73 +384,127 @@ watch(
     }
   }
 )
-
 </script>
 
 <template>
   <Typography.Title class="">Lifecare Page</Typography.Title>
   <div class="flex relative gap-8" :style="isExpandView && { gap: '0' }">
-    <div class="form-inner" :class="isExpandView ? 'w-0 overflow-hidden flex-grow-0 flex-shrink-0' : 'flex-1 min-w-[300px]'">
-      <Form ref="formRef" :class="['form-wrapper', isExpandView && 'hidden']" layout="vertical" :model="formState"
-        :label-col="{ span: 24 }" :wrapper-col="{ span: 24 }" autocomplete="off">
+    <div
+      class="form-inner"
+      :class="
+        isExpandView ? 'w-0 overflow-hidden flex-grow-0 flex-shrink-0' : 'flex-1 min-w-[300px]'
+      "
+    >
+      <Form
+        ref="formRef"
+        :class="['form-wrapper', isExpandView && 'hidden']"
+        layout="vertical"
+        :model="formState"
+        :label-col="{ span: 24 }"
+        :wrapper-col="{ span: 24 }"
+        autocomplete="off"
+      >
         <Form.Item :wrapper-col="{ offset: 0, span: 24 }">
           <Form.Item name="title" label="Title task">
             <Input v-model:value.trim="formState.title" />
           </Form.Item>
-          <Form.Item name="size_screen" label="Screen size" :rules="[{ required: true, message: 'Required!' }]">
+          <Form.Item
+            name="size_screen"
+            label="Screen size"
+            :rules="[{ required: true, message: 'Required!' }]"
+          >
             <Select v-model:value="formState.size_screen">
-              <Select.Option v-for="(item, index) in screenSizes" :key="index" :value="item.value">{{ item.label }}
+              <Select.Option v-for="(item, index) in screenSizes" :key="index" :value="item.value"
+                >{{ item.label }}
               </Select.Option>
             </Select>
           </Form.Item>
-          <Form.Item name="isCustomListImageLink" label="List link image custom" :rules="[{ required: true, message: 'Required!' }]">
-            <Switch v-model:checked="formState.isCustomListImageLink"/>
+          <Form.Item
+            name="isCustomListImageLink"
+            label="List link image custom"
+            :rules="[{ required: true, message: 'Required!' }]"
+          >
+            <Switch v-model:checked="formState.isCustomListImageLink" />
           </Form.Item>
           <template v-if="!formState.isCustomListImageLink">
-            <Form.Item name="base_url" label="Base url image" :rules="[{ required: true, message: 'Required!' }]">
+            <Form.Item
+              name="base_url"
+              label="Base url image"
+              :rules="[{ required: true, message: 'Required!' }]"
+            >
               <Input v-model:value="formState.base_url" />
             </Form.Item>
-            <Form.Item name="count_image" :rules="[{ required: true, message: 'Required!' }]" label="Count image">
+            <Form.Item
+              name="count_image"
+              :rules="[{ required: true, message: 'Required!' }]"
+              label="Count image"
+            >
               <Input v-model:value="formState.count_image" type="number" :min="0" />
             </Form.Item>
           </template>
           <template v-else>
-              <Form.Item name="listCustomLink" :label="'List image: '+ customListImage.length">
-                <Textarea v-model:value="formState.listCustomLink" :allow-clear="true" :rows="5"/>
-              </Form.Item>
+            <Form.Item name="listCustomLink" :label="'List image: ' + customListImage.length">
+              <Textarea v-model:value="formState.listCustomLink" :allow-clear="true" :rows="5" />
+            </Form.Item>
           </template>
           <Button type="primary" class="block w-full" @click="handleSubmit">Submit</Button>
         </Form.Item>
       </Form>
     </div>
-    <div class="highlight flex flex-col items-center" :style="gridItemData.length === 0 && { opacity: 0 }">
-      <div v-show="isShowHighlight" class="sticky items-center w-full z-10 top-0 px-2 py-2 bg-[#ffffff88] backdrop-blur flex gap-3"
-        :style="!isShowHighlight && { display: 'none' }">
+    <div
+      class="highlight flex flex-col items-center"
+      :style="gridItemData.length === 0 && { opacity: 0 }"
+    >
+      <div
+        v-show="isShowHighlight"
+        class="sticky items-center w-full z-10 top-0 px-2 py-2 bg-[#ffffff88] backdrop-blur flex gap-3"
+        :style="!isShowHighlight && { display: 'none' }"
+      >
         <Button shape="circle" class="btn-func" @click="handleExpandView">
           <DoubleLeftOutlined :class="isExpandView && 'rotate-180'" />
         </Button>
-        <Button class=""  @click="handleToggleGetDataGriItem">
+        <Button class="" @click="handleToggleGetDataGriItem">
           <DownloadOutlined /> Download bos file
         </Button>
-        <Button class="" type="primary"  @click="handleDownloadMainFile">
+        <Button class="" type="primary" @click="handleDownloadMainFile">
           <DownloadOutlined /> Download main file
         </Button>
-
       </div>
-      <div class="highlight-inner" :style="{
-        'min-width': `${formState.size_screen}px`,
-        'max-width': `${formState.size_screen}px`
-      }">
+      <div
+        class="highlight-inner"
+        :style="{
+          'min-width': `${formState.size_screen}px`,
+          'max-width': `${formState.size_screen}px`
+        }"
+      >
         <div class="">
-          <grid-layout v-bind:layout="gridItemData" :col-num="formState.size_screen" :row-height="1"
-            :is-draggable="false" :is-resizable="false" :is-mirrored="false" :use-css-transforms="false"
-            :margin="[0, 0]">
-            <grid-item v-for="(item, index) in gridItemData" :x="item.x" :y="item.y" :w="item.w" :h="item.h" :i="item.i"
-              :key="item.i">
-              <base-grid-item :item="item" :isGetNewData="isGetGridItemData" @on-get-data="(data: any) => onGetData({
+          <grid-layout
+            v-bind:layout="gridItemData"
+            :col-num="formState.size_screen"
+            :row-height="1"
+            :is-draggable="false"
+            :is-resizable="false"
+            :is-mirrored="false"
+            :use-css-transforms="false"
+            :margin="[0, 0]"
+          >
+            <grid-item
+              v-for="(item, index) in gridItemData"
+              :x="item.x"
+              :y="item.y"
+              :w="item.w"
+              :h="item.h"
+              :i="item.i"
+              :key="item.i"
+            >
+              <base-grid-item
+                :item="item"
+                :isGetNewData="isGetGridItemData"
+                @on-get-data="(data: any) => onGetData({
                 index,
                 data
-              })"></base-grid-item>
+              })"
+              ></base-grid-item>
             </grid-item>
           </grid-layout>
         </div>
