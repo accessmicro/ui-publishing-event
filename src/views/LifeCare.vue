@@ -97,8 +97,8 @@ const isGetGridItemData = ref(false)
 const isSaveBosFile = ref(false)
 const formState = reactive<IFormState>({
   size_screen: 1080,
-  base_url: 'https://img2.lgpral.kr/pral/bos/202410/1002/52886/mo_pral_live_',
-  count_image: 12,
+  base_url: 'https://img2.lgpral.kr/pral/bos/202410/1002/52887/pc_pral_benefit_',
+  count_image: 11,
   data: [],
   formDataTemplate: [],
   title: '',
@@ -183,7 +183,7 @@ const convertData = async () => {
 
   formState.formDataTemplate = formDataAllImages
   let currentHeight = 0
-  const _gridItemData: ICustomGridItemData[] = formDataAllImages.reduce((res, cur) => {
+  const _gridItemData: ICustomGridItemData[] = formDataAllImages?.reduce((res, cur) => {
     if (Array.isArray(cur)) {
       let items: any[] = []
       let currentX = 0
@@ -223,8 +223,9 @@ function handleToggleGetDataGriItem() {
     message.error('Please submit data first!')
     return
   }
-  isGetGridItemData.value = !isGetGridItemData.value
-  isSaveBosFile.value = true
+    isSaveBosFile.value = true
+    isGetGridItemData.value = !isGetGridItemData.value
+  // isSaveBosFile.value = true
 }
 
 function onGetData({ index, data }: { index: number; data: any }) {
@@ -303,7 +304,7 @@ watch(
               } else {
                 const listAbsoluteLinkStr = subItem.absolute.map(
                   (absoluteItem: any, index: number) => {
-                    let position = absoluteItem.label_position.replace(/\n/g, '')
+                    let position = absoluteItem.label_position?.replace(/\n/g, '')
                     return TEMPLATE_DEFAULT.onlyLink
                       .replace('{{link}}', absoluteItem.link)
                       .replace('{{position}}', position || 'position: absolute;')
@@ -336,7 +337,7 @@ watch(
               }
             } else {
               const listAbsoluteLinkStr = absolute.map((absoluteItem: any, index: number) => {
-                let position = absoluteItem.label_position.replace(/\n/g, '')
+                let position = absoluteItem.label_position?.replace(/\n/g, '')
                 return TEMPLATE_DEFAULT.onlyLink
                   .replace('{{link}}', absoluteItem.link)
                   .replace('{{position}}', position || 'position: absolute;')
@@ -355,7 +356,7 @@ watch(
             '{{style}}',
             TEMPLATE_DEFAULT.style[formState.size_screen === 1080 ? 'mo' : 'pc']
           )
-        isSaveBosFile.value &&
+        // isSaveBosFile.value &&
           handleSaveFile({
             template: templateStr,
             nameFile: `${formState.size_screen === 1080 ? 'mo' : 'pc'}_bos_${
