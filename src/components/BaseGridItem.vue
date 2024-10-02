@@ -32,7 +32,8 @@
               <span class="">Position link: </span>
               <Switch
                 class="w-fit"
-                v-model:checked="formState.isFullImage"
+                :checked="formState.isFullImage"
+                @change="(checked, e) => handleChangeTypeLink(checked as boolean)"
                 checked-children="full"
                 un-checked-children="absolute"
               />
@@ -133,6 +134,7 @@ const props = defineProps<{
 }>();
 const emits = defineEmits(['onGetData'])
 const timerId = ref<any | null>(null)
+const timerPushDataparentId = ref<any | null>(null)
 const timerOpenOptions = ref<any | null>(null)
 const indexAbsoluteModal = ref<any>(null)
 const formState = reactive({
@@ -315,30 +317,30 @@ const randomBgColor = () => {
   // return 'transparent'
   return `${color}7c`
 }
-// WATCH
-watch(formState.absolute, (val) => {}, { deep: true })
-watch(
-  () => formState.isFullImage,
-  (val) => {
-    if (!val) {
-      formState.full.link = ''
-      formState.full.isTargetBlank = false
-      formState.full.spanBlind = ''
-    } else {
-      formState.absolute = []
-    }
+const handleChangeTypeLink = (val: boolean) => {
+  formState.isFullImage = val
+  if (!val) {
+    formState.full.link = ''
+    formState.full.isTargetBlank = false
+    formState.full.spanBlind = ''
+  } else {
+    formState.absolute = []
   }
-)
+}
+// WATCH
 watch(
-  () => props.isGetNewData,
-  (val) => {
-    const { isFullImage, absolute, full, src } = formState;
-    emits("onGetData", {
-        isFullImage,
-        absolute,
-        full,
-        src,
-      })
+  () => formState,
+  (newV) => {
+    if (timerPushDataparentId.value) {
+      clearTimeout(timerPushDataparentId.value)
+    }
+    timerPushDataparentId.value = setTimeout(() => {
+      emits("onGetData", {...newV})
+    }, 500)
+  }
+  , {
+    deep: true,
+    immediate: true,
   }
 )
 
