@@ -7,6 +7,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    AbsoluteItem: typeof import('./src/components/AbsoluteItem.vue')['default']
     AFormItem: typeof import('ant-design-vue/es')['FormItem']
     ATextarea: typeof import('ant-design-vue/es')['Textarea']
     BaseGridItem: typeof import('./src/components/BaseGridItem.vue')['default']

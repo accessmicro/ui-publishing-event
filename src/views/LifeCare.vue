@@ -90,6 +90,7 @@ const TEMPLATE_DEFAULT = {
 // DATA
 const timerId = ref<any>(null)
 const formRef = ref()
+const keyGridComp = ref(0)
 const isExpandView = ref(false)
 const isShowHighlight = ref(true)
 const template = ref('')
@@ -121,7 +122,7 @@ const handleSubmit = () => {
   formRef.value
     .validate()
     .then(async () => {
-      const data = toRaw(formState)
+      keyGridComp.value++
       template.value = ''
       isShowHighlight.value = true
       convertData()
@@ -159,7 +160,6 @@ const convertData = async () => {
   const getAllSizeImagePromiseResult = (await Promise.all(getAllSizeImagePromise).catch((error) => {
     message.error(error)
   })) as any[]
-  console.log(`😮‍💨 ~ getAllSizeImagePromiseResult:`, getAllSizeImagePromiseResult);
   // CASE_1: all image === size_screen or grid
   const formDataAllImages: any[] = getAllSizeImagePromiseResult?.reduce((result: any, cur: any) => {
     const { width } = cur
@@ -223,13 +223,11 @@ function handleToggleGetDataGriItem() {
     message.error('Please submit data first!')
     return
   }
-    isSaveBosFile.value = true
-    isGetGridItemData.value = !isGetGridItemData.value
-  // isSaveBosFile.value = true
+    isSaveBosFile.value = !isSaveBosFile.value
 }
 
 function onGetData({ index, data }: { index: number; data: any }) {
-  console.log('GET_DATA', index)
+  console.log("CHANGE DATA", index);
   formState.data[index] = data
 }
 
@@ -262,26 +260,25 @@ const handleDownloadMainFile = () => {
 }
 // HOOKS
 watch(
-  () => formState.data,
+  () => isSaveBosFile.value,
   (newVal, oldVal) => {
-    console.log('formState.count_image', formState.count_image)
     if (timerId.value) {
       clearTimeout(timerId.value)
     }
-    if (newVal.length === formState.count_image) {
+    if (formState.data.length === formState.count_image) {
       timerId.value = setTimeout(() => {
         const data = formState.formDataTemplate.map((item, index) => {
           if (Array.isArray(item)) {
             return item.map((subItem, subIndex) => {
               return {
                 ...subItem,
-                ...newVal.find((val: any) => val.src === subItem.src)
+                ...formState.data.find((val: any) => val.src === subItem.src)
               }
             })
           }
           return {
             ...item,
-            ...newVal.find((val: any) => val.src === item.src)
+            ...formState.data.find((val: any) => val.src === item.src)
           }
         })
         let templateStr = ''
@@ -356,7 +353,6 @@ watch(
             '{{style}}',
             TEMPLATE_DEFAULT.style[formState.size_screen === 1080 ? 'mo' : 'pc']
           )
-        // isSaveBosFile.value &&
           handleSaveFile({
             template: templateStr,
             nameFile: `${formState.size_screen === 1080 ? 'mo' : 'pc'}_bos_${
@@ -371,16 +367,8 @@ watch(
 )
 
 watch(
-  () => template,
-  (newVal, oldVal) => {
-    if (newVal.value) {
-    }
-  }
-)
-
-watch(
   () => formState.listCustomLink,
-  (newVal, oldVal) => {
+  (newVal) => {
     if (newVal && formState.isCustomListImageLink) {
       formState.count_image = customListImage.value.length
     }
@@ -481,6 +469,7 @@ watch(
       >
         <div class="">
           <grid-layout
+            :key="keyGridComp"
             v-bind:layout="gridItemData"
             :col-num="formState.size_screen"
             :row-height="1"
