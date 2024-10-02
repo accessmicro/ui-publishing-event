@@ -96,9 +96,9 @@ const template = ref('')
 const isGetGridItemData = ref(false)
 const isSaveBosFile = ref(false)
 const formState = reactive<IFormState>({
-  size_screen: 1184,
-  base_url: 'https://image2.lglifecare.com/cnsEvent/202409/52598/pc_',
-  count_image: 27,
+  size_screen: 1080,
+  base_url: 'https://img2.lgpral.kr/pral/bos/202410/1002/52886/mo_pral_live_',
+  count_image: 12,
   data: [],
   formDataTemplate: [],
   title: '',
@@ -159,8 +159,9 @@ const convertData = async () => {
   const getAllSizeImagePromiseResult = (await Promise.all(getAllSizeImagePromise).catch((error) => {
     message.error(error)
   })) as any[]
+  console.log(`😮‍💨 ~ getAllSizeImagePromiseResult:`, getAllSizeImagePromiseResult);
   // CASE_1: all image === size_screen or grid
-  const formDataAllImages: any[] = getAllSizeImagePromiseResult.reduce((result: any, cur: any) => {
+  const formDataAllImages: any[] = getAllSizeImagePromiseResult?.reduce((result: any, cur: any) => {
     const { width } = cur
     if (width === size_screen) {
       result.push(cur)
