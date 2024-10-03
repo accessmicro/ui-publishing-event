@@ -49,5 +49,5 @@ body {
 }
 
 .btn-func {
-  @apply flex justify-center !size-10 items-center cursor-pointer;
+  @apply flex !size-10 justify-center items-center cursor-pointer;
 }
