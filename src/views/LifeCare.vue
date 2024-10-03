@@ -337,6 +337,8 @@ const handleSaveFile = ({ template, nameFile }: { template: string; nameFile?: s
 
 const handleDownloadMainFile = () => {
   const mainTemplate = formState.size_screen === 1080 ? MO_MAIN_TEMPLATE : PC_MAIN_TEMPLATE
+  const device = formState.size_screen === 1080 ? 'MO' : 'PC'
+  const task_number = formState.base_url!.split('/').reverse()[1]
   formRef.value
     .validate()
     .then(async () => {
@@ -344,12 +346,12 @@ const handleDownloadMainFile = () => {
         template: mainTemplate
           .replace(
             '{{bos_file_path}}',
-            `/uxtech/linkpage/${dayjs().startOf('day').format('YYYYMM')}/include/${
-              formState.size_screen === 1080 ? 'mo' : 'pc'
-            }_bos_${formState.base_url!.split('/').reverse()[1]}.html`
+            `/uxtech/linkpage/${dayjs()
+              .startOf('day')
+              .format('YYYYMM')}/include/${device.toLowerCase()}_bos_${task_number}.html`
           )
           .replace('{{title}}', formState.title || ''),
-        nameFile: `${formState.base_url!.split('/').reverse()[1]}_${dayjs()
+        nameFile: `${device.toLowerCase()}_${task_number}_${dayjs()
           .startOf('day')
           .format('MMDD')}.html`
       })
@@ -375,7 +377,10 @@ const handleCopyJson = () => {
   const jsonStr = SAMPLE_JSON.replace('{{title}}', formState.title || '')
     .replace('{{device}}', device)
     .replace('{{month}}', dayjs().startOf('day').format('YYYYMM'))
-    .replace('{{file}}', `${device.toLowerCase()}_bos_${task_number}.html`)
+    .replace(
+      '{{file}}',
+      `${device.toLowerCase()}_${task_number}_${dayjs().startOf('day').format('MMDD')}.html`
+    )
     .replace('{{date}}', dayjs().startOf('day').format('YYYY-MM-DD'))
     .replace('{{issue}}', task_number)
   navigator.clipboard
