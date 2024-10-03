@@ -97,12 +97,12 @@ const template = ref('')
 const isGetGridItemData = ref(false)
 const isSaveBosFile = ref(false)
 const formState = reactive<IFormState>({
-  size_screen: 1080,
+  size_screen: 1184,
   base_url: 'https://img2.lgpral.kr/pral/bos/202410/1002/52887/pc_pral_benefit_',
   count_image: 11,
   data: [],
   formDataTemplate: [],
-  title: '',
+  title: 'SAMPLE',
   isCustomListImageLink: false,
   listCustomLink: undefined
 })
@@ -218,50 +218,11 @@ const convertData = async () => {
   gridItemData.value = _gridItemData
 }
 
-function handleToggleGetDataGriItem() {
+function handleDownloadBosFile() {
   if (!gridItemData.value.length) {
     message.error('Please submit data first!')
     return
   }
-    isSaveBosFile.value = !isSaveBosFile.value
-}
-
-function onGetData({ index, data }: { index: number; data: any }) {
-  console.log("CHANGE DATA", index);
-  formState.data[index] = data
-}
-
-const handleSaveFile = ({ template, nameFile }: { template: string; nameFile?: string }) => {
-  const blob = new Blob([template], { type: 'text/html' })
-  saveAs(
-    blob,
-    nameFile ||
-      `${formState.size_screen === 1080 ? 'mo' : 'pc'}_bos_${
-        formState.base_url!.split('/').reverse()[1]
-      }.html`
-  )
-}
-
-const handleDownloadMainFile = () => {
-  const mainTemplate = formState.size_screen === 1080 ? MO_MAIN_TEMPLATE : PC_MAIN_TEMPLATE
-  handleSaveFile({
-    template: mainTemplate
-      .replace(
-        '{{bos_file_path}}',
-        `/uxtech/linkpage/${dayjs().startOf('day').format('YYYYMM')}/include/${
-          formState.size_screen === 1080 ? 'mo' : 'pc'
-        }_bos_${formState.base_url!.split('/').reverse()[1]}.html`
-      )
-      .replace('{{title}}', formState.title || ''),
-    nameFile: `${formState.base_url!.split('/').reverse()[1]}_${dayjs()
-      .startOf('day')
-      .format('MMDD')}.html`
-  })
-}
-// HOOKS
-watch(
-  () => isSaveBosFile.value,
-  (newVal, oldVal) => {
     if (timerId.value) {
       clearTimeout(timerId.value)
     }
@@ -362,9 +323,73 @@ watch(
         isSaveBosFile.value = false
       }, 1000)
     }
-  },
-  { deep: true }
-)
+}
+
+function onGetData({ index, data }: { index: number; data: any }) {
+  console.log("CHANGE DATA", index);
+  formState.data[index] = data
+}
+
+const handleSaveFile = ({ template, nameFile }: { template: string; nameFile?: string }) => {
+  const blob = new Blob([template], { type: 'text/html' })
+  saveAs(
+    blob,
+    nameFile ||
+      `${formState.size_screen === 1080 ? 'mo' : 'pc'}_bos_${
+        formState.base_url!.split('/').reverse()[1]
+      }.html`
+  )
+}
+
+const handleDownloadMainFile = () => {
+  const mainTemplate = formState.size_screen === 1080 ? MO_MAIN_TEMPLATE : PC_MAIN_TEMPLATE
+  formRef.value
+    .validate()
+    .then(async () => {
+      handleSaveFile({
+        template: mainTemplate
+          .replace(
+            '{{bos_file_path}}',
+            `/uxtech/linkpage/${dayjs().startOf('day').format('YYYYMM')}/include/${formState.size_screen === 1080 ? 'mo' : 'pc'
+            }_bos_${formState.base_url!.split('/').reverse()[1]}.html`
+          )
+          .replace('{{title}}', formState.title || ''),
+        nameFile: `${formState.base_url!.split('/').reverse()[1]}_${dayjs()
+          .startOf('day')
+          .format('MMDD')}.html`
+      })
+    })
+    .catch((error: any) => {
+      message.error(error)
+    })
+}
+const handleCopyJson = () => {
+  let SAMPLE_JSON = ` ,{
+    "UA": "EVENT",
+    "1Depth": "{{title}}",
+    "2Depth": "{{device}}",
+    "3Depth": "",
+    "Note": "",
+    "Wire": "https://wire.lgcns.com/jira/browse/COMMERCE2-{{issue}}",
+    "URL": "/uxtech/linkpage/{{month}}/{{file}}",
+    "ST": "완료",
+    "Update": "{{date}}"
+  }`;
+  const task_number = formState.base_url!.split('/').reverse()[1]
+  const device = formState.size_screen === 1080 ? 'MO' : 'PC'
+  const jsonStr = SAMPLE_JSON
+    .replace('{{title}}', formState.title || '')
+    .replace('{{device}}', device)
+    .replace('{{month}}', dayjs().startOf('day').format('YYYYMM'))
+    .replace('{{file}}', `${device.toLowerCase()}_bos_${task_number}.html`)
+    .replace('{{date}}', dayjs().startOf('day').format('YYYY-MM-DD'))
+    .replace('{{issue}}', task_number)
+  navigator.clipboard.writeText(jsonStr).then(() => {
+    message.success('Copy json success!')
+  }).catch(() => {
+    message.error('Copy json failed!')
+  })
+}
 
 watch(
   () => formState.listCustomLink,
@@ -395,8 +420,8 @@ watch(
         autocomplete="off"
       >
         <Form.Item :wrapper-col="{ offset: 0, span: 24 }">
-          <Form.Item name="title" label="Title task">
-            <Input v-model:value.trim="formState.title" />
+          <Form.Item name="title" label="Title task" :rules="[{ required: true, message: 'Required!' }]">
+            <Input v-model:value.trim="formState.title" :allow-clear="true"/>
           </Form.Item>
           <Form.Item
             name="size_screen"
@@ -422,14 +447,14 @@ watch(
               label="Base url image"
               :rules="[{ required: true, message: 'Required!' }]"
             >
-              <Input v-model:value="formState.base_url" />
+              <Input v-model:value="formState.base_url" :allow-clear="true"/>
             </Form.Item>
             <Form.Item
               name="count_image"
               :rules="[{ required: true, message: 'Required!' }]"
               label="Count image"
             >
-              <Input v-model:value="formState.count_image" type="number" :min="0" />
+              <Input v-model:value="formState.count_image" type="number" :min="0" :allow-clear="true"/>
             </Form.Item>
           </template>
           <template v-else>
@@ -453,11 +478,16 @@ watch(
         <Button shape="circle" class="btn-func" @click="handleExpandView">
           <DoubleLeftOutlined :class="isExpandView && 'rotate-180'" />
         </Button>
-        <Button class="" @click="handleToggleGetDataGriItem">
+        <Button class="" @click="handleDownloadBosFile">
           <DownloadOutlined /> Download bos file
         </Button>
         <Button class="" type="primary" @click="handleDownloadMainFile">
           <DownloadOutlined /> Download main file
+        </Button>
+        <Button shape="circle" class="btn-func" @click="handleCopyJson">
+          <template #icon>
+            <CopyOutlined />
+          </template>
         </Button>
       </div>
       <div
