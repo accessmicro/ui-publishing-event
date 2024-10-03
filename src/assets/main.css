@@ -47,3 +47,7 @@ body {
 #app {
   display: flex;
 }
+
+.btn-func {
+  @apply flex justify-center size-10 items-center cursor-pointer;
+}

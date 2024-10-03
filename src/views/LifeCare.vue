@@ -402,14 +402,15 @@ watch(
   <Typography.Title class="">Lifecare Page</Typography.Title>
   <div class="flex relative gap-8" :style="isExpandView && { gap: '0' }">
     <div
-      class="form-inner"
+      class="transition-all duration-300"
       :class="
         isExpandView ? 'w-0 overflow-hidden flex-grow-0 flex-shrink-0' : 'flex-1 min-w-[300px]'
       "
     >
       <Form
         ref="formRef"
-        :class="['form-wrapper', isExpandView && 'hidden']"
+        :class="[isExpandView && 'hidden']"
+        class="sticky top-5"
         layout="vertical"
         :model="formState"
         :label-col="{ span: 24 }"
@@ -543,17 +544,3 @@ watch(
     </div>
   </div>
 </template>
-
-<style lang="scss">
-.form-inner {
-  @apply transition-all duration-300;
-}
-
-.form-wrapper {
-  @apply sticky top-[20px];
-}
-
-.btn-func {
-  @apply flex justify-center size-10 items-center cursor-pointer;
-}
-</style>
