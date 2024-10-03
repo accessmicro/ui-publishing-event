@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { Button, Menu } from 'ant-design-vue'
-import { MailOutlined, SmileOutlined, MenuFoldOutlined } from '@ant-design/icons-vue'
+import { MailOutlined, SmileOutlined, MenuFoldOutlined, FundProjectionScreenOutlined, MedicineBoxOutlined } from '@ant-design/icons-vue'
 import type { MenuProps } from 'ant-design-vue'
 import { h, onMounted, ref, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
@@ -23,9 +23,15 @@ const items = ref<MenuProps['items']>([
   },
   {
     key: '/life-care',
-    icon: h(SmileOutlined),
+    icon: h(MedicineBoxOutlined),
     title: 'LifeCare',
     label: h(RouterLink, { to: '/life-care' }, 'LifeCare')
+  },
+  {
+    key: '/pral',
+    icon: h(FundProjectionScreenOutlined),
+    title: 'Pral Page',
+    label: h(RouterLink, { to: '/pral' }, 'Pral')
   }
 ])
 const selectedKeys = ref<string[]>([route.path])
@@ -72,7 +78,7 @@ const handleLogout = () => {
       :src="userData.picture" @dblclick="handleLogout"></a-avatar> -->
   </div>
 </template>
-<style scoped lang="postcss">
+<style scoped lang="scss">
 .nav-wrapper {
   @apply flex flex-col h-screen justify-between transition-all duration-300 sticky top-0;
 

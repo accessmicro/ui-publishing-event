@@ -6,6 +6,7 @@ import { GridLayout, GridItem } from 'vue3-grid-layout-next'
 import { saveAs } from 'file-saver'
 import { MO_MAIN_TEMPLATE, PC_MAIN_TEMPLATE } from '@/data/lifecare'
 import dayjs from 'dayjs'
+import { TEMPLATE_DEFAULT } from '@/data/pral'
 // import type { GridItemData } from "vue-grid-layout";
 interface GridItemData {
   x: number
@@ -46,47 +47,6 @@ const screenSizes = [
   { label: 'PC (1184px)', value: 1184 }
 ]
 
-const TEMPLATE_DEFAULT = {
-  fullNotLink: `<div style="position: relative"><img class="img_linkpage" src="{{src}}" alt="img" /></div>`,
-  fullHaveLink: `<div style="position: relative"><a href="{{link}}" {{target_blank}}><span class="blind">{{spanBlind}}</span><img class="img_linkpage" src="{{src}}" alt="img" /></a></div>`,
-  absoluteLinks: `<div style="position: relative">{{list_link}}<img class="img_linkpage" src="{{src}}" alt="img" /></div>`,
-  onlyLink: `<a href="{{link}}" style="background-color: transparent; {{position}}" {{target_blank}}><span class="blind">{{spanBlind}}</span></a>`,
-  grid: `<div style="display: grid; grid-template-columns: repeat({{col}}, 1fr); grid-gap: 0;">{{list_link}}</div>`,
-  root: `<div class="eventPage-shell">{{template}}</div>`,
-  style: {
-    mo: `<style>
-  .eventPage-wrap {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    max-width: 1080px;
-    overflow: hidden;
-    margin: 0 auto;
-  }
-  .img_linkpage {
-    display: block;
-    max-width: 100%;
-    height: auto;
-  }
-</style>`,
-    pc: `<style>
-  .eventPage-wrap {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    max-width: 1184px;
-    overflow: hidden;
-    margin: 0 auto;
-  }
-  .img_linkpage {
-    display: block;
-    max-width: 100%;
-    height: auto;
-  }
-</style>`
-  }
-}
-
 // DATA
 const timerId = ref<any>(null)
 const formRef = ref()
@@ -98,8 +58,8 @@ const isGetGridItemData = ref(false)
 const isSaveBosFile = ref(false)
 const formState = reactive<IFormState>({
   size_screen: 1184,
-  base_url: 'https://img2.lgpral.kr/pral/bos/202410/1002/52887/pc_pral_benefit_',
-  count_image: 11,
+  base_url: 'https://img2.lgpral.kr/pral/bos/202410/1002/52886/pc_pral_live_',
+  count_image: 12,
   data: [],
   formDataTemplate: [],
   title: 'SAMPLE',
@@ -111,6 +71,10 @@ const gridItemData = ref<ICustomGridItemData[]>([])
 const customListImage = computed(() => {
   if (!formState.listCustomLink) return []
   return formState.listCustomLink!.split('\n').map((item) => item.trim())
+})
+
+const nameFile = computed(() => {
+  return `${formState.size_screen === 1080 ? 'mo' : 'pc'}_pral_${formState.base_url!.split('_').reverse()[1]}_${dayjs().startOf('day').format('MMDD')}.html`
 })
 
 // METHODS
@@ -218,7 +182,7 @@ const convertData = async () => {
   gridItemData.value = _gridItemData
 }
 
-function handleDownloadBosFile() {
+function handleDownloadFile() {
   if (!gridItemData.value.length) {
     message.error('Please submit data first!')
     return
@@ -311,13 +275,14 @@ function handleDownloadBosFile() {
       templateStr = TEMPLATE_DEFAULT.root
         .replace('{{template}}', templateStr)
         .replace(
-          '{{style}}',
-          TEMPLATE_DEFAULT.style[formState.size_screen === 1080 ? 'mo' : 'pc']
+          '{{head}}',
+          TEMPLATE_DEFAULT.head[formState.size_screen === 1080 ? 'mo' : 'pc']
         )
+        .replace('{{title}}', formState.title || 'SAMPLE')
+        .replace('{{footer}}', TEMPLATE_DEFAULT.footer[formState.size_screen === 1080 ? 'mo' : 'pc'])
       handleSaveFile({
         template: templateStr,
-        nameFile: `${formState.size_screen === 1080 ? 'mo' : 'pc'}_bos_${formState.base_url!.split('/').reverse()[1]
-          }.html`
+        nameFile: nameFile.value,
       })
       isSaveBosFile.value = false
     }, 1000)
@@ -333,39 +298,15 @@ const handleSaveFile = ({ template, nameFile }: { template: string; nameFile?: s
   const blob = new Blob([template], { type: 'text/html' })
   saveAs(
     blob,
-    nameFile ||
-    `${formState.size_screen === 1080 ? 'mo' : 'pc'}_bos_${formState.base_url!.split('/').reverse()[1]
-    }.html`
+    nameFile,
   )
 }
 
-const handleDownloadMainFile = () => {
-  const mainTemplate = formState.size_screen === 1080 ? MO_MAIN_TEMPLATE : PC_MAIN_TEMPLATE
-  formRef.value
-    .validate()
-    .then(async () => {
-      handleSaveFile({
-        template: mainTemplate
-          .replace(
-            '{{bos_file_path}}',
-            `/uxtech/linkpage/${dayjs().startOf('day').format('YYYYMM')}/include/${formState.size_screen === 1080 ? 'mo' : 'pc'
-            }_bos_${formState.base_url!.split('/').reverse()[1]}.html`
-          )
-          .replace('{{title}}', formState.title || ''),
-        nameFile: `${formState.base_url!.split('/').reverse()[1]}_${dayjs()
-          .startOf('day')
-          .format('MMDD')}.html`
-      })
-    })
-    .catch((error: any) => {
-      message.error(error)
-    })
-}
 const handleCopyJson = () => {
   let SAMPLE_JSON = ` ,{
-    "UA": "EVENT",
+    "UA": "{{device}}",
     "1Depth": "{{title}}",
-    "2Depth": "{{device}}",
+    "2Depth": "",
     "3Depth": "",
     "Note": "",
     "Wire": "https://wire.lgcns.com/jira/browse/COMMERCE2-{{issue}}",
@@ -379,7 +320,7 @@ const handleCopyJson = () => {
     .replace('{{title}}', formState.title || '')
     .replace('{{device}}', device)
     .replace('{{month}}', dayjs().startOf('day').format('YYYYMM'))
-    .replace('{{file}}', `${device.toLowerCase()}_bos_${task_number}.html`)
+    .replace('{{file}}', nameFile.value)
     .replace('{{date}}', dayjs().startOf('day').format('YYYY-MM-DD'))
     .replace('{{issue}}', task_number)
   navigator.clipboard.writeText(jsonStr).then(() => {
@@ -400,7 +341,7 @@ watch(
 </script>
 
 <template>
-  <Typography.Title class="">Lifecare Page</Typography.Title>
+  <Typography.Title class="">Pral Page</Typography.Title>
   <div class="flex relative gap-8" :style="isExpandView && { gap: '0' }">
     <div class="form-inner" :class="isExpandView ? 'w-0 overflow-hidden flex-grow-0 flex-shrink-0' : 'flex-1 min-w-[300px]'
       ">
@@ -418,7 +359,7 @@ watch(
           </Form.Item>
           <Form.Item name="isCustomListImageLink" label="List link image custom"
             :rules="[{ required: true, message: 'Required!' }]">
-            <Switch v-model:checked="formState.isCustomListImageLink" />
+            <Switch v-model:checked="formState.isCustomListImageLink" :disabled="true"/>
           </Form.Item>
           <template v-if="!formState.isCustomListImageLink">
             <Form.Item name="base_url" label="Base url image" :rules="[{ required: true, message: 'Required!' }]">
@@ -446,11 +387,10 @@ watch(
         <Button shape="circle" class="btn-func" @click="handleExpandView">
           <DoubleLeftOutlined :class="isExpandView && 'rotate-180'" />
         </Button>
-        <Button class="" @click="handleDownloadBosFile">
-          <DownloadOutlined /> Download bos file
-        </Button>
-        <Button class="" type="primary" @click="handleDownloadMainFile">
-          <DownloadOutlined /> Download main file
+        <Button shape="circle" class="btn-func" @click="handleDownloadFile">
+          <template #icon>
+            <DownloadOutlined />
+          </template>
         </Button>
         <Button shape="circle" class="btn-func" @click="handleCopyJson">
           <template #icon>

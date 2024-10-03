@@ -22,7 +22,12 @@ const router = createRouter({
           path: 'life-care',
           name: 'life-care',
           component: () => import('../views/LifeCare.vue')
-        }
+        },
+        {
+          path: 'pral',
+          name: 'pral',
+          component: () => import('../views/PralPage.vue'),
+        },
       ]
     }
   ]
