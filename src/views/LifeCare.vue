@@ -481,16 +481,18 @@ watch(
   </div>
 </template>
 
-<style scoped lang="postcss">
-.form-inner {
-  @apply transition-all duration-300;
-}
+<style scoped lang="scss">
+:deep {
+  .form-inner {
+    @apply transition-all duration-300;
+  }
 
-.form-wrapper {
-  @apply sticky top-[20px];
-}
+  .form-wrapper {
+    @apply sticky top-[20px];
+  }
 
-.btn-func {
-  @apply flex justify-center size-10 items-center cursor-pointer;
+  .btn-func {
+    @apply flex justify-center size-10 items-center cursor-pointer;
+  }
 }
 </style>
