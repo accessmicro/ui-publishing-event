@@ -11,7 +11,7 @@
     "type-check": "vue-tsc --build --force",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/",
-    "deploy": "yarn build && ./pre-deploy.sh && git commit -m 'deploy' -a && git push && gh-pages -d dist"
+    "deploy": "yarn build && chmod +x ./pre-deploy.sh && ./pre-deploy.sh && git commit -m 'deploy' -a && git push && gh-pages -d dist"
   },
   "dependencies": {
     "ant-design-vue": "4.x",
