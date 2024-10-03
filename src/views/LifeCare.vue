@@ -544,16 +544,16 @@ watch(
   </div>
 </template>
 
-<style scoped lang="scss">
-:deep(.form-inner) {
+<style lang="scss">
+.form-inner {
   @apply transition-all duration-300;
 }
 
-:deep(.form-wrapper) {
+.form-wrapper {
   @apply sticky top-[20px];
 }
 
-:deep(.btn-func) {
+.btn-func {
   @apply flex justify-center size-10 items-center cursor-pointer;
 }
 </style>

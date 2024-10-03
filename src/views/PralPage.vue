@@ -74,7 +74,9 @@ const customListImage = computed(() => {
 })
 
 const nameFile = computed(() => {
-  return `${formState.size_screen === 1080 ? 'mo' : 'pc'}_pral_${formState.base_url!.split('_').reverse()[1]}_${dayjs().startOf('day').format('MMDD')}.html`
+  return `${formState.size_screen === 1080 ? 'mo' : 'pc'}_pral_${
+    formState.base_url!.split('_').reverse()[1]
+  }_${dayjs().startOf('day').format('MMDD')}.html`
 })
 
 // METHODS
@@ -102,8 +104,8 @@ const convertData = async () => {
   const listImageUrls = isCustomListImageLink
     ? customListImage.value
     : Array.from({ length: count_image }).map((item, index) => {
-      return `${base_url}${index < 9 ? '0' + (index + 1) : index + 1}.png`
-    })
+        return `${base_url}${index < 9 ? '0' + (index + 1) : index + 1}.png`
+      })
   const getAllSizeImagePromise = listImageUrls.map((imageUrl, index) => {
     return new Promise((resolve, reject) => {
       const img = new Image()
@@ -215,10 +217,7 @@ function handleDownloadFile() {
                 return TEMPLATE_DEFAULT.fullHaveLink
                   .replace('{{src}}', subItem.src)
                   .replace('{{link}}', subItem.full.link)
-                  .replace(
-                    '{{target_blank}}',
-                    subItem.full.isTargetBlank ? 'target="_blank"' : ''
-                  )
+                  .replace('{{target_blank}}', subItem.full.isTargetBlank ? 'target="_blank"' : '')
                   .replace('{{spanBlind}}', subItem.full.spanBlind || '')
               } else {
                 return TEMPLATE_DEFAULT.fullNotLink.replace('{{src}}', subItem.src)
@@ -274,15 +273,15 @@ function handleDownloadFile() {
       })
       templateStr = TEMPLATE_DEFAULT.root
         .replace('{{template}}', templateStr)
-        .replace(
-          '{{head}}',
-          TEMPLATE_DEFAULT.head[formState.size_screen === 1080 ? 'mo' : 'pc']
-        )
+        .replace('{{head}}', TEMPLATE_DEFAULT.head[formState.size_screen === 1080 ? 'mo' : 'pc'])
         .replace('{{title}}', formState.title || 'SAMPLE')
-        .replace('{{footer}}', TEMPLATE_DEFAULT.footer[formState.size_screen === 1080 ? 'mo' : 'pc'])
+        .replace(
+          '{{footer}}',
+          TEMPLATE_DEFAULT.footer[formState.size_screen === 1080 ? 'mo' : 'pc']
+        )
       handleSaveFile({
         template: templateStr,
-        nameFile: nameFile.value,
+        nameFile: nameFile.value
       })
       isSaveBosFile.value = false
     }, 1000)
@@ -290,16 +289,13 @@ function handleDownloadFile() {
 }
 
 function onGetData({ index, data }: { index: number; data: any }) {
-  console.log("CHANGE DATA", index);
+  console.log('CHANGE DATA', index)
   formState.data[index] = data
 }
 
 const handleSaveFile = ({ template, nameFile }: { template: string; nameFile?: string }) => {
   const blob = new Blob([template], { type: 'text/html' })
-  saveAs(
-    blob,
-    nameFile,
-  )
+  saveAs(blob, nameFile)
 }
 
 const handleCopyJson = () => {
@@ -313,21 +309,23 @@ const handleCopyJson = () => {
     "URL": "/uxtech/linkpage/{{month}}/{{file}}",
     "ST": "완료",
     "Update": "{{date}}"
-  }`;
+  }`
   const task_number = formState.base_url!.split('/').reverse()[1]
   const device = formState.size_screen === 1080 ? 'MO' : 'PC'
-  const jsonStr = SAMPLE_JSON
-    .replace('{{title}}', formState.title || '')
+  const jsonStr = SAMPLE_JSON.replace('{{title}}', formState.title || '')
     .replace('{{device}}', device)
     .replace('{{month}}', dayjs().startOf('day').format('YYYYMM'))
     .replace('{{file}}', nameFile.value)
     .replace('{{date}}', dayjs().startOf('day').format('YYYY-MM-DD'))
     .replace('{{issue}}', task_number)
-  navigator.clipboard.writeText(jsonStr).then(() => {
-    message.success('Copy json success!')
-  }).catch(() => {
-    message.error('Copy json failed!')
-  })
+  navigator.clipboard
+    .writeText(jsonStr)
+    .then(() => {
+      message.success('Copy json success!')
+    })
+    .catch(() => {
+      message.error('Copy json failed!')
+    })
 }
 
 watch(
@@ -343,30 +341,66 @@ watch(
 <template>
   <Typography.Title class="">Pral Page</Typography.Title>
   <div class="flex relative gap-8" :style="isExpandView && { gap: '0' }">
-    <div class="form-inner" :class="isExpandView ? 'w-0 overflow-hidden flex-grow-0 flex-shrink-0' : 'flex-1 min-w-[300px]'
-      ">
-      <Form ref="formRef" :class="['form-wrapper', isExpandView && 'hidden']" layout="vertical" :model="formState"
-        :label-col="{ span: 24 }" :wrapper-col="{ span: 24 }" autocomplete="off">
+    <div
+      class="form-inner"
+      :class="
+        isExpandView ? 'w-0 overflow-hidden flex-grow-0 flex-shrink-0' : 'flex-1 min-w-[300px]'
+      "
+    >
+      <Form
+        ref="formRef"
+        :class="['form-wrapper', isExpandView && 'hidden']"
+        layout="vertical"
+        :model="formState"
+        :label-col="{ span: 24 }"
+        :wrapper-col="{ span: 24 }"
+        autocomplete="off"
+      >
         <Form.Item :wrapper-col="{ offset: 0, span: 24 }">
-          <Form.Item name="title" label="Title task" :rules="[{ required: true, message: 'Required!' }]">
+          <Form.Item
+            name="title"
+            label="Title task"
+            :rules="[{ required: true, message: 'Required!' }]"
+          >
             <Input v-model:value.trim="formState.title" :allow-clear="true" />
           </Form.Item>
-          <Form.Item name="size_screen" label="Screen size" :rules="[{ required: true, message: 'Required!' }]">
+          <Form.Item
+            name="size_screen"
+            label="Screen size"
+            :rules="[{ required: true, message: 'Required!' }]"
+          >
             <Select v-model:value="formState.size_screen">
-              <Select.Option v-for="(item, index) in screenSizes" :key="index" :value="item.value">{{ item.label }}
+              <Select.Option v-for="(item, index) in screenSizes" :key="index" :value="item.value"
+                >{{ item.label }}
               </Select.Option>
             </Select>
           </Form.Item>
-          <Form.Item name="isCustomListImageLink" label="List link image custom"
-            :rules="[{ required: true, message: 'Required!' }]">
-            <Switch v-model:checked="formState.isCustomListImageLink" :disabled="true"/>
+          <Form.Item
+            name="isCustomListImageLink"
+            label="List link image custom"
+            :rules="[{ required: true, message: 'Required!' }]"
+          >
+            <Switch v-model:checked="formState.isCustomListImageLink" :disabled="true" />
           </Form.Item>
           <template v-if="!formState.isCustomListImageLink">
-            <Form.Item name="base_url" label="Base url image" :rules="[{ required: true, message: 'Required!' }]">
+            <Form.Item
+              name="base_url"
+              label="Base url image"
+              :rules="[{ required: true, message: 'Required!' }]"
+            >
               <Input v-model:value="formState.base_url" :allow-clear="true" />
             </Form.Item>
-            <Form.Item name="count_image" :rules="[{ required: true, message: 'Required!' }]" label="Count image">
-              <Input v-model:value="formState.count_image" type="number" :min="0" :allow-clear="true" />
+            <Form.Item
+              name="count_image"
+              :rules="[{ required: true, message: 'Required!' }]"
+              label="Count image"
+            >
+              <Input
+                v-model:value="formState.count_image"
+                type="number"
+                :min="0"
+                :allow-clear="true"
+              />
             </Form.Item>
           </template>
           <template v-else>
@@ -379,11 +413,17 @@ watch(
       </Form>
     </div>
     <div
-      :class="['highlight flex flex-col items-center bg-white grow-2 shrink-2 relative transition-all duration-300', formState.size_screen === 1080 ? 'basis-[1080px]' : 'basis-[1184px]']"
-      :style="gridItemData.length === 0 && { opacity: 0 }">
-      <div v-show="isShowHighlight"
+      :class="[
+        'highlight flex flex-col items-center bg-white grow-2 shrink-2 relative transition-all duration-300',
+        formState.size_screen === 1080 ? 'basis-[1080px]' : 'basis-[1184px]'
+      ]"
+      :style="gridItemData.length === 0 && { opacity: 0 }"
+    >
+      <div
+        v-show="isShowHighlight"
         class="sticky items-center w-full z-10 top-0 px-2 py-2 bg-[#ffffff88] backdrop-blur flex gap-3"
-        :style="!isShowHighlight && { display: 'none' }">
+        :style="!isShowHighlight && { display: 'none' }"
+      >
         <Button shape="circle" class="btn-func" @click="handleExpandView">
           <DoubleLeftOutlined :class="isExpandView && 'rotate-180'" />
         </Button>
@@ -398,20 +438,42 @@ watch(
           </template>
         </Button>
       </div>
-      <div class="highlight-inner" :style="{
-        'min-width': `${formState.size_screen}px`,
-        'max-width': `${formState.size_screen}px`
-      }">
+      <div
+        class="highlight-inner"
+        :style="{
+          'min-width': `${formState.size_screen}px`,
+          'max-width': `${formState.size_screen}px`
+        }"
+      >
         <div class="">
-          <grid-layout :key="keyGridComp" v-bind:layout="gridItemData" :col-num="formState.size_screen" :row-height="1"
-            :is-draggable="false" :is-resizable="false" :is-mirrored="false" :use-css-transforms="false"
-            :margin="[0, 0]">
-            <grid-item v-for="(item, index) in gridItemData" :x="item.x" :y="item.y" :w="item.w" :h="item.h" :i="item.i"
-              :key="item.i">
-              <base-grid-item :item="item" :isGetNewData="isGetGridItemData" @on-get-data="(data: any) => onGetData({
+          <grid-layout
+            :key="keyGridComp"
+            v-bind:layout="gridItemData"
+            :col-num="formState.size_screen"
+            :row-height="1"
+            :is-draggable="false"
+            :is-resizable="false"
+            :is-mirrored="false"
+            :use-css-transforms="false"
+            :margin="[0, 0]"
+          >
+            <grid-item
+              v-for="(item, index) in gridItemData"
+              :x="item.x"
+              :y="item.y"
+              :w="item.w"
+              :h="item.h"
+              :i="item.i"
+              :key="item.i"
+            >
+              <base-grid-item
+                :item="item"
+                :isGetNewData="isGetGridItemData"
+                @on-get-data="(data: any) => onGetData({
                 index,
                 data
-              })"></base-grid-item>
+              })"
+              ></base-grid-item>
             </grid-item>
           </grid-layout>
         </div>
@@ -420,17 +482,3 @@ watch(
     </div>
   </div>
 </template>
-
-<style scoped lang="postcss">
-.form-inner {
-  @apply transition-all duration-300;
-}
-
-.form-wrapper {
-  @apply sticky top-[20px];
-}
-
-.btn-func {
-  @apply flex justify-center size-10 items-center cursor-pointer;
-}
-</style>
