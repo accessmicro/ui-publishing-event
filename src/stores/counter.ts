@@ -10,3 +10,21 @@ export const useCounterStore = defineStore('counter', () => {
 
   return { count, doubleCount, increment }
 })
+
+export const useIsChangedFormStore = defineStore('isChanged', {
+  state: () => {
+    return {
+      isChanged: false,
+    }
+  },
+  getters: {
+    getIsChanged(): boolean {
+      return this.isChanged
+    },
+  },
+  actions: {
+    setIsChanged(value: boolean) {
+      this.isChanged = value
+    },
+  },
+})

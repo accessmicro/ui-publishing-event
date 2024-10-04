@@ -1,13 +1,28 @@
 <script setup lang="ts">
-import { Button, DatePicker, Form, Input, Select, Typography, message } from 'ant-design-vue';
-import { reactive, ref, toRaw } from 'vue';
-import { DoubleLeftOutlined, CopyOutlined, DownloadOutlined } from '@ant-design/icons-vue';
-import type { Dayjs } from 'dayjs';
-import dayjs from 'dayjs';
-import type { Rule } from 'ant-design-vue/es/form';
+import {
+  Button,
+  DatePicker,
+  Form,
+  Input,
+  Select,
+  Typography,
+  message,
+} from "ant-design-vue";
+import { computed, reactive, ref, toRaw, watch } from "vue";
+import {
+  DoubleLeftOutlined,
+  CopyOutlined,
+  DownloadOutlined,
+} from "@ant-design/icons-vue";
+import type { Dayjs } from "dayjs";
+import dayjs from "dayjs";
+import type { Rule } from "ant-design-vue/es/form";
 import { saveAs } from "file-saver";
+import { useRoute, useRouter } from "vue-router";
+import { useIsChangedFormStore } from "@/stores/counter";
 
 type IFormState = {
+  title: string;
   size_banner: string | undefined;
   base_url: string;
   count: number | undefined;
@@ -15,52 +30,72 @@ type IFormState = {
   links: string | undefined;
 };
 
-const formState = reactive<IFormState>({
+const initialFormState: IFormState = {
   size_banner: "750",
-  base_url: 'https://image2.lglifecare.com/ems/202409/51930/img_',
+  base_url: "https://image2.lglifecare.com/ems/202409/51930/img_",
   count: 11,
-  date: dayjs().startOf('day'),
+  date: dayjs().startOf("day"),
+  title: "EMS",
   links: "\n\n\n\n\n\n\n\n\n\n\n",
-});
+}
+
+const formState = reactive<IFormState>({...initialFormState});
+const changedFormStore = useIsChangedFormStore()
+
+const router = useRouter();
+const route = useRoute();
 
 const isExpandView = ref(false);
 const isLoadingTemplate = ref(false);
+const infoTask = computed(() => {
+  const task_number = formState.base_url.split("/").reverse()[1];
+  const file_name = `ems_${task_number}.html`;
+  return {
+    title: formState.title,
+    task_number: task_number,
+    month: dayjs().startOf("day").format("YYYYMM"),
+    file_name: file_name,
+    date: dayjs().startOf("day").format("YYYY-MM-DD"),
+  };
+});
 
-const template = ref('');
+const template = ref("");
 
 const formRef = ref();
 
-const ruleLinks: Rule[] = [{
-  validator: async (rule, value) => {
-    if (!value) {
-      return Promise.reject('Please enter links');
-    }
-    if (formState.count === undefined) {
-      return Promise.reject('Please enter count image');
-    }
-    const links = value.split('\n');
-    if (links.length !== +(formState.count || 0) + 1) {
-      return Promise.reject(`Please enter ${+formState.count + 1} links`);
-    }
-    return Promise.resolve();
+const ruleLinks: Rule[] = [
+  {
+    validator: async (rule, value) => {
+      if (!value) {
+        return Promise.reject("Please enter links");
+      }
+      if (formState.count === undefined) {
+        return Promise.reject("Please enter count image");
+      }
+      const links = value.split("\n");
+      if (links.length !== +(formState.count || 0) + 1) {
+        return Promise.reject(`Please enter ${+formState.count + 1} links`);
+      }
+      return Promise.resolve();
+    },
   },
-}]
+];
 
 const onSubmit = async () => {
   formRef.value
     .validate()
     .then(async () => {
       const data = toRaw(formState);
-      const date = (data.date! as Dayjs).format('YYYY년 MM월 DD일');
-      template.value = '';
+      const date = (data.date! as Dayjs).format("YYYY년 MM월 DD일");
+      template.value = "";
       template.value = await getTemplate({
         base_url: data.base_url,
         count: data.count!,
         size_banner: Number(data.size_banner),
-        extension: 'png',
+        extension: "png",
         date,
-        links: (data.links as any)?.split('\n'),
-      })
+        links: (data.links as any)?.split("\n"),
+      });
     })
     .catch((error: any) => {
       // message.error(error);
@@ -69,24 +104,25 @@ const onSubmit = async () => {
 
 const onLoadIframe = (e: any) => {
   const iframeDoc = e.target.contentDocument || e.target.contentWindow.document;
-  const style = document.createElement('style');
+  const style = document.createElement("style");
   style.innerHTML = `
     body {
       margin: 0;
       padding: 0;
-      scrollbar-width: none;
-      -ms-overflow-style: none;
-      background-color: red;
-    }
-    ::-webkit-scrollbar {
-      display: none;
     }
   `;
   iframeDoc.head.appendChild(style);
-  e.target.style.height = e.target.contentWindow.document.body.scrollHeight + 'px';
+  e.target.style.height = e.target.contentWindow.document.body.scrollHeight + "px";
 };
 
-const getTemplate = async ({ base_url, count, extension = "png", size_banner, date, links }: {
+const getTemplate = async ({
+  base_url,
+  count,
+  extension = "png",
+  size_banner,
+  date,
+  links,
+}: {
   base_url: string;
   count: number;
   extension?: string;
@@ -96,8 +132,7 @@ const getTemplate = async ({ base_url, count, extension = "png", size_banner, da
 }) => {
   const link_logo = links.shift();
   const list_image = Array.from({ length: count }).map((item, index) => {
-    return `${base_url}${index < 9 ? "0" + (index + 1) : index + 1
-      }.${extension}`;
+    return `${base_url}${index < 9 ? "0" + (index + 1) : index + 1}.${extension}`;
   });
   const getAllPromise = list_image.map((imageUrl, index) => {
     return new Promise((resolve, reject) => {
@@ -127,9 +162,7 @@ const getTemplate = async ({ base_url, count, extension = "png", size_banner, da
     } else {
       let lastItemOfRes = result[result.length - 1];
       if (Array.isArray(lastItemOfRes)) {
-        if (
-          lastItemOfRes.reduce((acc, cur) => acc + cur.width, 0) === size_banner
-        ) {
+        if (lastItemOfRes.reduce((acc, cur) => acc + cur.width, 0) === size_banner) {
           result = [...result, [cur]];
         } else {
           lastItemOfRes = result.pop();
@@ -235,22 +268,55 @@ const getTemplate = async ({ base_url, count, extension = "png", size_banner, da
   </table>
 </body>
 </html>`;
-  localStorage.setItem('template', template);
+  localStorage.setItem("template", template);
   return template;
-}
+};
 
 const resetForm = () => {
   formRef.value.resetFields();
-  template.value = '';
+  template.value = "";
 };
 
 const handleExpandView = () => {
   isExpandView.value = !isExpandView.value;
 };
 const handleSaveFile = () => {
-  const blob = new Blob([template.value], { type: 'text/html' });
-  saveAs(blob, `ems_${formState.base_url.split('/').reverse()[1]}.html`);
-}
+  const blob = new Blob([template.value], { type: "text/html" });
+  saveAs(blob, `ems_${formState.base_url.split("/").reverse()[1]}.html`);
+};
+const handleCopyJson = () => {
+  let jsonStr = ` ,{
+    "UA": "EMS",
+    "1Depth": "{{title}}",
+    "2Depth": "",
+    "3Depth": "",
+    "Note": "",
+    "Wire": "https://wire.lgcns.com/jira/browse/COMMERCE2-{{task_number}}",
+    "URL": "/uxtech/linkpage/{{month}}/{{file_name}}",
+    "ST": "완료",
+    "Update": "{{date}}"
+  }
+`;
+  jsonStr = jsonStr
+    .replace(/{{title}}/g, infoTask.value.title)
+    .replace(/{{task_number}}/g, infoTask.value.task_number)
+    .replace(/{{month}}/g, infoTask.value.month)
+    .replace(/{{file_name}}/g, infoTask.value.file_name)
+    .replace(/{{date}}/g, infoTask.value.date);
+  navigator.clipboard
+    .writeText(jsonStr)
+    .then(() => {
+      message.success("Copy json success");
+    })
+    .catch(() => {
+      message.error("Copy json failed");
+    });
+};
+watch(() => formState, (newV) => {
+  changedFormStore.setIsChanged(!(JSON.stringify({...newV}) === JSON.stringify(initialFormState)))
+}, {
+  deep: true,
+})
 </script>
 
 <template>
@@ -258,29 +324,76 @@ const handleSaveFile = () => {
     <Typography.Title>EMS Page</Typography.Title>
     <div class="wrapper" :style="isExpandView && { gap: '0' }">
       <div class="form-inner" :class="isExpandView ? 'w-0 overflow-hidden' : 'flex-1'">
-        <Form ref="formRef" :class="['form-wrapper', isExpandView && 'hidden']" layout="vertical" :model="formState"
-          :label-col="{ span: 24 }" :wrapper-col="{ span: 24 }" autocomplete="off">
-          <Form.Item name="size_banner" label="Size banner" :rules="[{ required: true, message: 'Required!' }]">
+        <Form
+          ref="formRef"
+          :class="['form-wrapper', isExpandView && 'hidden']"
+          layout="vertical"
+          :model="formState"
+          :label-col="{ span: 24 }"
+          :wrapper-col="{ span: 24 }"
+          autocomplete="off"
+        >
+          <Form.Item
+            name="title"
+            label="Title task"
+            :rules="[{ required: true, message: 'Required!' }]"
+          >
+            <Input v-model:value="formState.title" allow-clear />
+          </Form.Item>
+          <Form.Item
+            name="size_banner"
+            label="Size banner"
+            :rules="[{ required: true, message: 'Required!' }]"
+          >
             <Select v-model:value="formState.size_banner">
-              <Select.Option v-for="(item, index) in [720, 750, 1184]" :key="index" :value="item" />
+              <Select.Option
+                v-for="(item, index) in [720, 750, 1184]"
+                :key="index"
+                :value="item"
+              />
             </Select>
           </Form.Item>
-          <Form.Item name="base_url" label="Base url image" :rules="[{ required: true, message: 'Required!' }]">
-            <Input v-model:value="formState.base_url" />
+          <Form.Item
+            name="base_url"
+            label="Base url image"
+            :rules="[{ required: true, message: 'Required!' }]"
+          >
+            <Input v-model:value="formState.base_url" allow-clear />
           </Form.Item>
-          <Form.Item name="count" :rules="[{ required: true, message: 'Required!' }]" label="Count image">
+          <Form.Item
+            name="count"
+            :rules="[{ required: true, message: 'Required!' }]"
+            label="Count image"
+          >
             <Input v-model:value="formState.count" type="number" :min="0" />
           </Form.Item>
-          <Form.Item name="date" label="Date footer" :rules="[{ required: true, message: 'Required!' }]">
+          <Form.Item
+            name="date"
+            label="Date footer"
+            :rules="[{ required: true, message: 'Required!' }]"
+          >
             <DatePicker v-model:value="formState.date" class="w-full" />
           </Form.Item>
-          <a-form-item :label="`Links: Logo + ${formState.count || '_'} links of images`" name="links"
-            :rules="ruleLinks">
-            <a-textarea v-model:value="formState.links" :autoSize="{ minRows: 5, maxRows: 10 }" allow-clear />
+          <a-form-item
+            :label="`Links: Logo + ${formState.count || '_'} links of images`"
+            name="links"
+            :rules="ruleLinks"
+          >
+            <a-textarea
+              v-model:value="formState.links"
+              :autoSize="{ minRows: 5, maxRows: 10 }"
+              allow-clear
+            />
           </a-form-item>
           <Form.Item :wrapper-col="{ offset: 0, span: 24 }">
-            <Button :loading="isLoadingTemplate" :disabled="isLoadingTemplate" type="primary" class="block w-full"
-              @click="onSubmit">Submit</Button>
+            <Button
+              :loading="isLoadingTemplate"
+              :disabled="isLoadingTemplate"
+              type="primary"
+              class="block w-full"
+              @click="onSubmit"
+              >Submit</Button
+            >
           </Form.Item>
           <Form.Item :wrapper-col="{ offset: 0, span: 24 }">
             <Button type="default" class="block w-full" @click="resetForm">Reset</Button>
@@ -288,16 +401,38 @@ const handleSaveFile = () => {
         </Form>
       </div>
       <div class="highlight" :style="{ minHeight: formState.size_banner }">
-        <div class="sticky top-0 px-2 py-2 bg-[#ffffff88] backdrop-blur flex gap-3"
-          :style="!template && { display: 'none' }">
-          <Button v-show="!!template" shape="circle" class="btn-func" @click="handleExpandView">
+        <div
+          class="sticky top-0 px-2 py-2 bg-[#ffffff88] backdrop-blur flex gap-3"
+          :style="!template && { display: 'none' }"
+        >
+          <Button
+            v-show="!!template"
+            shape="circle"
+            class="btn-func"
+            @click="handleExpandView"
+          >
             <DoubleLeftOutlined :class="isExpandView && 'rotate-180'" />
           </Button>
-          <Button class="btn-func" v-show="!!template" shape="circle" @click="handleSaveFile">
+          <Button
+            class="btn-func"
+            v-show="!!template"
+            shape="circle"
+            @click="handleSaveFile"
+          >
             <DownloadOutlined />
           </Button>
+          <Button shape="circle" class="btn-func" @click="handleCopyJson">
+            <template #icon>
+              <CopyOutlined />
+            </template>
+          </Button>
         </div>
-        <iframe :srcdoc="template" frameborder="0" @load="onLoadIframe" style="width: 100%;"></iframe>
+        <iframe
+          :srcdoc="template"
+          frameborder="0"
+          @load="onLoadIframe"
+          style="width: 100%"
+        ></iframe>
       </div>
     </div>
   </main>

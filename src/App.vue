@@ -1,15 +1,19 @@
 <script lang="ts" setup>
-import { Button, Menu } from 'ant-design-vue'
+import { Button, Menu, Modal } from 'ant-design-vue'
 import { MailOutlined, SmileOutlined, MenuFoldOutlined, FundProjectionScreenOutlined, MedicineBoxOutlined } from '@ant-design/icons-vue'
 import type { MenuProps } from 'ant-design-vue'
 import { h, onMounted, ref, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { decodeCredential } from 'vue3-google-login'
+import { useIsChangedFormStore } from './stores/counter'
+import { storeToRefs } from 'pinia'
 
 // DEFINE DATA
 const route = useRoute()
 const router = useRouter()
-const userData = ref(JSON.parse(localStorage.getItem('user') || '{}'));
+const redirectTo = ref<string | null>(null);
+const changedFormStore = useIsChangedFormStore()
+const { getIsChanged } = storeToRefs(changedFormStore)
 watch(route, (to, from) => {
   selectedKeys.value = [to.path === "/" ? "/ems" : to.path];
   to.path === "/" && router.push("/ems");
@@ -19,19 +23,25 @@ const items = ref<MenuProps['items']>([
     key: '/ems',
     icon: h(MailOutlined),
     title: 'EMS',
-    label: h(RouterLink, { to: '/ems' }, 'EMS')
+    label: 'EMS',
+    onClick: () => handleClickRedirect('/ems'),
+    // label: h(RouterLink, { to: '/ems' }, 'EMS')
   },
   {
     key: '/life-care',
     icon: h(MedicineBoxOutlined),
     title: 'LifeCare',
-    label: h(RouterLink, { to: '/life-care' }, 'LifeCare')
+    label: 'LifeCare',
+    onClick: () => handleClickRedirect('/life-care'),
+    // label: h(RouterLink, { to: '/life-care' }, 'LifeCare')
   },
   {
     key: '/pral',
     icon: h(FundProjectionScreenOutlined),
     title: 'Pral Page',
-    label: h(RouterLink, { to: '/pral' }, 'Pral')
+    label: 'Pral',
+    onClick: () => handleClickRedirect('/pral'),
+    // label: h(RouterLink, { to: '/pral' }, 'Pral')
   }
 ])
 const selectedKeys = ref<string[]>([route.path])
@@ -46,12 +56,19 @@ const handleToggleNav = () => {
   isCollapsedNav.value = !isCollapsedNav.value
 }
 
-// LIFE CYCLE HOOKS
-onMounted(() => {
-});
-const handleLogout = () => {
-  localStorage.clear()
-  router.push('/login')
+const handleClickRedirect = (path: string) => {
+  if (getIsChanged.value) {
+    redirectTo.value = path
+  }
+  else router.push(path)
+}
+const handleRedirect = () => {
+  changedFormStore.setIsChanged(false)
+  redirectTo.value && router.push(redirectTo.value)
+  redirectTo.value = null
+}
+const handleClose = () => {
+  redirectTo.value = null
 }
 </script>
 <template>
@@ -66,8 +83,9 @@ const handleLogout = () => {
   </div>
   <div class="flex-1 min-h-screen p-4 relative bg-slate-100">
     <RouterView />
-    <!-- <a-avatar class="fixed top-4 right-4 cursor-pointer" :size="64" v-if="route.path !== '/login'"
-      :src="userData.picture" @dblclick="handleLogout"></a-avatar> -->
+    <Modal :open="!!redirectTo" title="Warning" ok-text="Yes" cancel-text="No" @ok="handleRedirect" @cancel="handleClose">
+      <p>Are you sure you want to leave this page?</p>
+    </Modal>
   </div>
 </template>
 <style scoped lang="scss">
