@@ -313,7 +313,7 @@ const handleCopyJson = () => {
     });
 };
 watch(() => formState, (newV) => {
-  changedFormStore.setIsChanged(!(JSON.stringify({...newV}) === JSON.stringify(initialFormState)))
+  changedFormStore.setIsChanged(!(JSON.stringify({ ...newV }) === JSON.stringify(initialFormState)))
 }, {
   deep: true,
 })
