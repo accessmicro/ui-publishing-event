@@ -1,6 +1,6 @@
 {
   "name": "ui-publishing-event",
-  "version": "1.0.5",
+  "version": "1.0.4",
   "private": true,
   "type": "module",
   "scripts": {
@@ -12,8 +12,8 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "format": "prettier --write src/",
     "pre-deploy": "chmod +x pre-deploy.sh && sh pre-deploy.sh",
-    "deploy:ios": "yarn build && npm version patch --no-git-tag-version && chmod +x pre-deploy-ios.sh && sh pre-deploy-ios.sh && git add . && git commit -m \"deploy %npm_package_version%\" && git push && gh-pages -d dist",
-    "deploy:window": "yarn build && npm version patch --no-git-tag-version && chmod +x pre-deploy.sh && sh pre-deploy.sh && git add . && git commit -m \"deploy $npm_package_version\" && git push && gh-pages -d dist"
+    "deploy:ios": "yarn build && npm version patch --no-git-tag-version && chmod +x pre-deploy-ios.sh && sh pre-deploy-ios.sh && git add . && git commit -m \"deploy $npm_package_version\" && git push && gh-pages -d dist",
+    "deploy:window": "yarn build && npm version patch --no-git-tag-version && chmod +x pre-deploy.sh && sh pre-deploy.sh && git add . && git commit -m \"deploy %npm_package_version%\" && git push && gh-pages -d dist"
   },
   "dependencies": {
     "ant-design-vue": "4.x",
