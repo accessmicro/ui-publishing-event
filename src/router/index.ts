@@ -28,6 +28,11 @@ const router = createRouter({
           name: 'pral',
           component: () => import('../views/PralPage.vue'),
         },
+        {
+          path: 'version',
+          name: 'version',
+          component: () => import('../views/Version.vue'),
+        },
       ]
     }
   ]

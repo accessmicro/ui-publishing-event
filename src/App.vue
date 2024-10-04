@@ -48,14 +48,6 @@ const handleToggleNav = () => {
 
 // LIFE CYCLE HOOKS
 onMounted(() => {
-  // const accessToken = localStorage.getItem('access_token')
-  // if (!accessToken) {
-  //   router.push('/login')
-  // }
-  // const userData: any = decodeCredential(accessToken!)
-  // if (userData?.email !== "vanlung99@gmail.com") {
-  //   router.push('/login')
-  // }
 });
 const handleLogout = () => {
   localStorage.clear()
