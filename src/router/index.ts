@@ -14,6 +14,11 @@ const router = createRouter({
       name: '',
       children: [
         {
+          path: 'event-guide',
+          name: 'event-guide',
+          component: import('../views/EventGuide.vue')
+        },
+        {
           path: 'ems',
           name: 'ems',
           component: EmsPage
@@ -27,11 +32,6 @@ const router = createRouter({
           path: 'pral',
           name: 'pral',
           component: () => import('../views/PralPage.vue'),
-        },
-        {
-          path: 'version',
-          name: 'version',
-          component: () => import('../views/Version.vue'),
         },
       ]
     }

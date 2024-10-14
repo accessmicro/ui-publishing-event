@@ -58,8 +58,8 @@ const isGetGridItemData = ref(false)
 const isSaveBosFile = ref(false)
 const formState = reactive<IFormState>({
   size_screen: 1184,
-  base_url: 'https://img2.lgpral.kr/pral/bos/202410/1002/52886/pc_pral_live_',
-  count_image: 12,
+  base_url: 'https://img2.lgpral.kr/pral/bos/202410/53334/pc_pral_promotion_',
+  count_image: 10,
   data: [],
   formDataTemplate: [],
   title: 'SAMPLE',

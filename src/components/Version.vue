@@ -1,6 +1,6 @@
 <template>
   <div>
-    Version: v{{ version }}
+    v{{ version }}
   </div>
 </template>
 
