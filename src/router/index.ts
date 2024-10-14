@@ -16,7 +16,7 @@ const router = createRouter({
         {
           path: 'event-guide',
           name: 'event-guide',
-          component: import('../views/EventGuide.vue')
+          component: () => import('../views/EventGuide.vue')
         },
         {
           path: 'ems',
