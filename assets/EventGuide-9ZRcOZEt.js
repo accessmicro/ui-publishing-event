@@ -1,1 +1,0 @@
-import{_ as e,c,a as t}from"./index-D_XRmhDK.js";const r={},a={src:"https://ux.lglifecare.com/uxtech/area/guide_event.html",frameborder:"0",class:"w-full h-full"};function s(o,n){return t(),c("iframe",a)}const _=e(r,[["render",s]]);export{_ as default};
