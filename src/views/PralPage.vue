@@ -192,7 +192,7 @@ function handleDownloadFile() {
   if (timerId.value) {
     clearTimeout(timerId.value)
   }
-  if (formState.data.length === formState.count_image) {
+  // if (formState.data.length === formState.count_image) {
     timerId.value = setTimeout(() => {
       const data = formState.formDataTemplate.map((item, index) => {
         if (Array.isArray(item)) {
@@ -285,7 +285,7 @@ function handleDownloadFile() {
       })
       isSaveBosFile.value = false
     }, 1000)
-  }
+  // }
 }
 
 function onGetData({ index, data }: { index: number; data: any }) {
