@@ -279,6 +279,7 @@ function handleDownloadFile() {
           '{{footer}}',
           TEMPLATE_DEFAULT.footer[formState.size_screen === 1080 ? 'mo' : 'pc']
         )
+        .replace(/<span class="blind"><\/span>/g, '')
       handleSaveFile({
         template: templateStr,
         nameFile: nameFile.value
