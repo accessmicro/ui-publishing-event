@@ -1,10 +1,10 @@
 const TEMPLATE_DEFAULT = {
-  fullNotLink: `<div style="position: relative"><img class="img_linkpage" src="{{src}}" alt="img" /></div>`,
-  fullHaveLink: `<div style="position: relative"><a href="{{link}}" id="ga_event_click" {{target_blank}}><span class="blind">{{spanBlind}}</span><img class="img_linkpage" src="{{src}}" alt="img" /></a></div>`,
-  absoluteLinks: `<div style="position: relative">{{list_link}}<img class="img_linkpage" src="{{src}}" alt="img" /></div>`,
+  fullNotLink: `<div style="position: relative"><img class="img-linkpage" src="{{src}}" alt="img" /></div>`,
+  fullHaveLink: `<div style="position: relative"><a href="{{link}}" id="ga_event_click" {{target_blank}}><span class="blind">{{spanBlind}}</span><img class="img-linkpage" src="{{src}}" alt="img" /></a></div>`,
+  absoluteLinks: `<div style="position: relative">{{list_link}}<img class="img-linkpage" src="{{src}}" alt="img" /></div>`,
   onlyLink: `<a href="{{link}}" id="ga_event_click" style="background-color: transparent; {{position}}" {{target_blank}}><span class="blind">{{spanBlind}}</span></a>`,
   grid: `<div style="display: grid; grid-template-columns: repeat({{col}}, 1fr); grid-gap: 0;">{{list_link}}</div>`,
-  root: `{{head}}\n<div style="display: inline-flex; flex-direction: column">{{template}}{{footer}}</div></body></html>`,
+  root: `{{head}}\n<div class="eventPage-shell">{{template}}{{footer}}</div></body></html>`,
   head: {
     mo: `<!DOCTYPE html>
 <html lang="ko">
@@ -33,8 +33,7 @@ const TEMPLATE_DEFAULT = {
     }
   </script>
 </head>
-<body>
-  <link rel="stylesheet" href="https://www.lgpral.kr/V2_mo/resource/css/LGPRAL/linkpage.css" />`,
+<body>`,
     pc: `<!DOCTYPE html>
 <html lang="ko">
   <head>
@@ -63,19 +62,18 @@ const TEMPLATE_DEFAULT = {
     </script>
   </head>
 
-  <body>
-    <link rel="stylesheet" href="https://www.lgpral.kr/V2_pc/resource/css/LGPRAL/linkpage.css" />`
+  <body>`
   },
   footer: {
     mo: `<div style="position: relative">
     <a href="https://www.lgpral.kr/eventExhibition/1464"
       style="position: absolute; display: block; top: 30%; left: 34%; width: 32%; height: 55%; font-size: 0; color: rgba(0, 0, 0, 0)"
       id="ga_event_click"></a>
-    <img class="img_linkpage" src="https://img2.lgpral.kr/pral/bos/202308/0809/btn_mo_list_single.png" alt="" />
+    <img class="img-linkpage" src="https://img2.lgpral.kr/pral/bos/202308/0809/btn_mo_list_single.png" alt="" />
   </div>`,
   pc: `<div style="position: relative">
   <a href="https://www.lgpral.kr/eventExhibition/1464" style="position: absolute; display: block; top: 30%; left: 34%; width: 32%; height: 55%; font-size: 0; color: rgba(0, 0, 0, 0)" id="ga_event_click"></a>
-  <img class="img_linkpage" src="https://img2.lgpral.kr/pral/bos/202308/0809/btn_pc_list_single.png" alt="" />
+  <img class="img-linkpage" src="https://img2.lgpral.kr/pral/bos/202308/0809/btn_pc_list_single.png" alt="" />
 </div>`
   }
 }

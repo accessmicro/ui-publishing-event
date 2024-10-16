@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Typography, Form, Button, Select, Input, message, Switch, Textarea } from 'ant-design-vue'
+import { Typography, Form, Button, Select, Input, message, Switch, Textarea, RadioButton, RadioGroup } from 'ant-design-vue'
 import { computed, reactive, ref, toRaw, watch } from 'vue'
 import { DoubleLeftOutlined, CopyOutlined, DownloadOutlined } from '@ant-design/icons-vue'
 import { GridLayout, GridItem } from 'vue3-grid-layout-next'
@@ -22,6 +22,7 @@ type IFormState = {
   base_url?: string
   count_image?: number
   data: any[]
+  type: 'live' | 'benefit' | 'promotion'
   formDataTemplate: any[]
   isCustomListImageLink?: boolean
   listCustomLink?: string
@@ -37,6 +38,7 @@ const initialFormState: IFormState = {
   base_url: undefined,
   count_image: undefined,
   data: [],
+  type: 'live',
   formDataTemplate: [],
   isCustomListImageLink: false,
   listCustomLink: ''
@@ -57,10 +59,11 @@ const template = ref('')
 const isGetGridItemData = ref(false)
 const isSaveBosFile = ref(false)
 const formState = reactive<IFormState>({
-  size_screen: 1184,
-  base_url: 'https://img2.lgpral.kr/pral/bos/202410/53334/pc_pral_promotion_',
+  size_screen: screenSizes[1].value,
+  base_url: `https://img2.lgpral.kr/pral/bos/${dayjs().startOf('day').format('YYYYMM')}/53334/pc_pral_live_`,
   count_image: 10,
   data: [],
+  type: 'live',
   formDataTemplate: [],
   title: 'SAMPLE',
   isCustomListImageLink: false,
@@ -330,12 +333,13 @@ const handleCopyJson = () => {
 }
 
 watch(
-  () => formState.listCustomLink,
-  (newVal) => {
-    if (newVal && formState.isCustomListImageLink) {
-      formState.count_image = customListImage.value.length
-    }
-  }
+  [() => formState.size_screen, () => formState.type],
+  ([newSizeScreen, newType]) => {
+    formState.base_url = formState.base_url?.replace(
+      /\/(mo|pc)_pral/,
+      `/${newSizeScreen === 1080 ? 'mo' : 'pc'}_pral`
+    )?.replace(/(live|benefit|promotion)_/, `${newType}_`)
+  },
 )
 </script>
 
@@ -377,12 +381,11 @@ watch(
               </Select.Option>
             </Select>
           </Form.Item>
-          <Form.Item
-            name="isCustomListImageLink"
-            label="List link image custom"
-            :rules="[{ required: true, message: 'Required!' }]"
-          >
-            <Switch v-model:checked="formState.isCustomListImageLink" :disabled="true" />
+          <Form.Item name="type" label="Type"
+          :rules="[{ required: true, message: 'Required!' }]">
+            <RadioGroup v-model:value="formState.type" button-style="solid">
+              <RadioButton v-for="(type) in ['live', 'benefit', 'promotion']" :key="type" :value="type">{{ type.toUpperCase() }}</RadioButton>
+            </RadioGroup>
           </Form.Item>
           <template v-if="!formState.isCustomListImageLink">
             <Form.Item
@@ -390,7 +393,7 @@ watch(
               label="Base url image"
               :rules="[{ required: true, message: 'Required!' }]"
             >
-              <Input v-model:value="formState.base_url" :allow-clear="true" />
+              <Textarea v-model:value.trim="formState.base_url" :allow-clear="true" />
             </Form.Item>
             <Form.Item
               name="count_image"
