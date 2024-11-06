@@ -98,8 +98,8 @@ const isGetGridItemData = ref(false)
 const isSaveBosFile = ref(false)
 const formState = reactive<IFormState>({
   size_screen: 1184,
-  base_url: 'https://img2.lgpral.kr/pral/bos/202410/1002/52887/pc_pral_benefit_',
-  count_image: 11,
+  base_url: 'https://image2.lglifecare.com/cnsEvent/202411/54976/pc_54976_',
+  count_image: 6,
   data: [],
   formDataTemplate: [],
   title: 'SAMPLE',
@@ -223,10 +223,10 @@ function handleDownloadBosFile() {
     message.error('Please submit data first!')
     return
   }
-  if (timerId.value) {
-    clearTimeout(timerId.value)
-  }
-  if (formState.data.length === formState.count_image) {
+  // if (timerId.value) {
+  //   clearTimeout(timerId.value)
+  // }
+  // if (formState.data.length === formState.count_image) {
     timerId.value = setTimeout(() => {
       const data = formState.formDataTemplate.map((item, index) => {
         if (Array.isArray(item)) {
@@ -316,7 +316,7 @@ function handleDownloadBosFile() {
       })
       isSaveBosFile.value = false
     }, 1000)
-  }
+  // }
 }
 
 function onGetData({ index, data }: { index: number; data: any }) {
