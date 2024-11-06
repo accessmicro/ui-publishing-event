@@ -65,16 +65,22 @@ const TEMPLATE_DEFAULT = {
   <body>`
   },
   footer: {
-    mo: `<div style="position: relative">
-    <a href="https://www.lgpral.kr/eventExhibition/1464"
-      style="position: absolute; display: block; top: 30%; left: 34%; width: 32%; height: 55%; font-size: 0; color: rgba(0, 0, 0, 0)"
-      id="ga_event_click"></a>
-    <img class="img-linkpage" src="https://img2.lgpral.kr/pral/bos/202308/0809/btn_mo_list_single.png" alt="" />
-  </div>`,
-  pc: `<div style="position: relative">
-  <a href="https://www.lgpral.kr/eventExhibition/1464" style="position: absolute; display: block; top: 30%; left: 34%; width: 32%; height: 55%; font-size: 0; color: rgba(0, 0, 0, 0)" id="ga_event_click"></a>
-  <img class="img-linkpage" src="https://img2.lgpral.kr/pral/bos/202308/0809/btn_pc_list_single.png" alt="" />
-</div>`
+    mo: `<div style="margin: 56px 0; display: flex; justify-content: center;">
+    <a href="https://www.lgpral.kr/eventExhibition/1464" id="ga_event_click"
+      style="display: block; width: 270px; height: 48px; line-height: 48px; font-size: 20px; font-weight: 700; text-align: center; background: #242223; color: #fff;">
+      <span class="blind">목록 이동</span>
+      목록
+    </a>
+  </div>
+`,
+  pc: `<div style="margin: 56px 0; display: flex; justify-content: center;">
+  <a href="https://www.lgpral.kr/eventExhibition/1464" id="ga_event_click"
+    style="display: block; width: 270px; height: 48px; line-height: 48px; font-size: 20px; font-weight: 700; text-align: center; background: #242223; color: #fff;">
+    <span class="blind">목록 이동</span>
+    목록
+  </a>
+</div>
+`
   }
 }
 
