@@ -47,9 +47,9 @@ const screenSizes = [
 ]
 
 const TEMPLATE_DEFAULT = {
-  fullNotLink: `<div style="position: relative"><img class="img_linkpage" src="{{src}}" alt="img" /></div>`,
-  fullHaveLink: `<div style="position: relative"><a href="{{link}}" {{target_blank}}><span class="blind">{{spanBlind}}</span><img class="img_linkpage" src="{{src}}" alt="img" /></a></div>`,
-  absoluteLinks: `<div style="position: relative">{{list_link}}<img class="img_linkpage" src="{{src}}" alt="img" /></div>`,
+  fullNotLink: `<div style="position: relative"><img class="img-linkpage" src="{{src}}" alt="img" /></div>`,
+  fullHaveLink: `<div style="position: relative"><a href="{{link}}" {{target_blank}}><span class="blind">{{spanBlind}}</span><img class="img-linkpage" src="{{src}}" alt="img" /></a></div>`,
+  absoluteLinks: `<div style="position: relative">{{list_link}}<img class="img-linkpage" src="{{src}}" alt="img" /></div>`,
   onlyLink: `<a href="{{link}}" style="background-color: transparent; {{position}}" {{target_blank}}><span class="blind">{{spanBlind}}</span></a>`,
   grid: `<div style="display: grid; grid-template-columns: repeat({{col}}, 1fr); grid-gap: 0;">{{list_link}}</div>`,
   root: `<div class="eventPage-shell">{{template}}</div>`,
@@ -63,7 +63,7 @@ const TEMPLATE_DEFAULT = {
     overflow: hidden;
     margin: 0 auto;
   }
-  .img_linkpage {
+  .img-linkpage {
     display: block;
     max-width: 100%;
     height: auto;
@@ -78,7 +78,7 @@ const TEMPLATE_DEFAULT = {
     overflow: hidden;
     margin: 0 auto;
   }
-  .img_linkpage {
+  .img-linkpage {
     display: block;
     max-width: 100%;
     height: auto;
