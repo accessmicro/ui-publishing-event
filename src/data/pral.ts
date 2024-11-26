@@ -66,7 +66,7 @@ const TEMPLATE_DEFAULT = {
   },
   footer: {
     mo: `<div style="margin: 56px 0; display: flex; justify-content: center;">
-    <a href="https://www.lgpral.kr/eventExhibition/1464" id="ga_event_click"
+    <a target="_self" href="https://www.lgpral.kr/eventExhibition/1464" id="ga_event_click"
       style="display: block; width: 270px; height: 48px; line-height: 48px; font-size: 20px; font-weight: 700; text-align: center; background: #242223; color: #fff;">
       <span class="blind">목록 이동</span>
       목록
@@ -74,7 +74,7 @@ const TEMPLATE_DEFAULT = {
   </div>
 `,
   pc: `<div style="margin: 56px 0; display: flex; justify-content: center;">
-  <a href="https://www.lgpral.kr/eventExhibition/1464" id="ga_event_click"
+  <a target="_self" href="https://www.lgpral.kr/eventExhibition/1464" id="ga_event_click"
     style="display: block; width: 270px; height: 48px; line-height: 48px; font-size: 20px; font-weight: 700; text-align: center; background: #242223; color: #fff;">
     <span class="blind">목록 이동</span>
     목록

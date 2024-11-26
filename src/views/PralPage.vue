@@ -220,7 +220,7 @@ function handleDownloadFile() {
                 return TEMPLATE_DEFAULT.fullHaveLink
                   .replace('{{src}}', subItem.src)
                   .replace('{{link}}', subItem.full.link)
-                  .replace('{{target_blank}}', subItem.full.isTargetBlank ? 'target="_blank"' : '')
+                  .replace('{{target_blank}}', subItem.full.isTargetBlank ? 'target="_blank"' : 'target="_self"')
                   .replace('{{spanBlind}}', subItem.full.spanBlind || '')
               } else {
                 return TEMPLATE_DEFAULT.fullNotLink.replace('{{src}}', subItem.src)
@@ -234,7 +234,7 @@ function handleDownloadFile() {
                     .replace('{{position}}', position || 'position: absolute;')
                     .replace(
                       '{{target_blank}}',
-                      absoluteItem.isTargetBlank ? 'target="_blank"' : ''
+                      absoluteItem.isTargetBlank ? 'target="_blank"' : 'target="_self"'
                     )
                     .replace('{{spanBlind}}', absoluteItem.spanBlind || '')
                 }
@@ -254,7 +254,7 @@ function handleDownloadFile() {
               templateStr += TEMPLATE_DEFAULT.fullHaveLink
                 .replace('{{src}}', src)
                 .replace('{{link}}', full.link)
-                .replace('{{target_blank}}', full.isTargetBlank ? 'target="_blank"' : '')
+                .replace('{{target_blank}}', full.isTargetBlank ? 'target="_blank"' : 'target="_self"')
                 .replace('{{spanBlind}}', full.spanBlind || '')
             } else {
               templateStr += TEMPLATE_DEFAULT.fullNotLink.replace('{{src}}', src)
@@ -265,7 +265,7 @@ function handleDownloadFile() {
               return TEMPLATE_DEFAULT.onlyLink
                 .replace('{{link}}', absoluteItem.link)
                 .replace('{{position}}', position || 'position: absolute;')
-                .replace('{{target_blank}}', absoluteItem.isTargetBlank ? 'target="_blank"' : '')
+                .replace('{{target_blank}}', absoluteItem.isTargetBlank ? 'target="_blank"' : 'target="_self"')
                 .replace('{{spanBlind}}', absoluteItem.spanBlind || '')
             })
             templateStr += TEMPLATE_DEFAULT.absoluteLinks

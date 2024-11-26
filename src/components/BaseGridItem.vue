@@ -277,7 +277,7 @@ const handleAddAbsoluteLink = () => {
     parent_width: props.item.w,
     parent_height: props.item.h,
     link: '',
-    isTargetBlank: true,
+    isTargetBlank: false,
     spanBlind: '',
     x: 0,
     y: 0,
