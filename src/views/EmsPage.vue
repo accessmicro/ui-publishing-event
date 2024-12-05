@@ -88,13 +88,22 @@ const onSubmit = async () => {
       const data = toRaw(formState);
       const date = (data.date! as Dayjs).format("YYYY년 MM월 DD일");
       template.value = "";
+      let links: string[] = [];
+      let titleLinks: string[] = [];
+      if(data.links?.split("\n")?.some(item => item.includes(','))) {
+        links = data.links?.split("\n").map((item) => item.split(",")?.[1] || '');
+        titleLinks = data.links?.split("\n").map((item) => item.split(",")?.[0] || '');
+      } else {
+        links = data.links?.split("\n") || [];
+      }
       template.value = await getTemplate({
         base_url: data.base_url,
         count: data.count!,
         size_banner: Number(data.size_banner),
         extension: "png",
         date,
-        links: (data.links as any)?.split("\n"),
+        links,
+        titleLinks,
       });
     })
     .catch((error: any) => {
@@ -122,6 +131,7 @@ const getTemplate = async ({
   size_banner,
   date,
   links,
+  titleLinks,
 }: {
   base_url: string;
   count: number;
@@ -129,6 +139,7 @@ const getTemplate = async ({
   size_banner: number;
   date: string;
   links: string[];
+  titleLinks: string[];
 }) => {
   const link_logo = links.shift();
   const list_image = Array.from({ length: count }).map((item, index) => {
@@ -197,7 +208,7 @@ const getTemplate = async ({
   const formDataStr = formData.map((item: any, index: number) => {
     if (Array.isArray(item)) {
       const templateRowLink = `<td width="{{width}}" style="-ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; border-collapse: collapse;">
-      <a href="{{link}}" target="_blank" title="event" style="-ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; display: inline-block; text-decoration: none;">
+      <a href="{{link}}" target="_blank" title="{{titleLink}}" style="-ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; display: inline-block; text-decoration: none;">
         <img src="{{src}}" width="{{width}}" height="{{height}}" alt="event" style="border: 0; outline: none; text-decoration: none; vertical-align: top; -ms-interpolation-mode: bicubic;">
       </a>
     </td>`;
@@ -216,7 +227,8 @@ const getTemplate = async ({
               .replace(/{{src}}/g, cell.src)
               .replace(/{{width}}/g, cell.width)
               .replace(/{{height}}/g, cell.height)
-              .replace(/{{link}}/g, cell.link);
+              .replace(/{{link}}/g, cell.link)
+              .replace(/{{titleLink}}/g, titleLinks?.[index] || 'event');
           })
           .join("\n") +
         `</tr>
@@ -227,7 +239,7 @@ const getTemplate = async ({
     } else {
       const templateRowLinkFull = `<tr>
             <td width="*" style="-ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; border-collapse: collapse;">
-              <a href="{{link}}" target="_blank" title="event" style="-ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; display: inline-block; text-decoration: none;">
+              <a href="{{link}}" target="_blank" title="{{titleLink}}" style="-ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%; display: inline-block; text-decoration: none;">
                 <img src="{{src}}" width="{{size_banner}}" height="{{height}}" alt="event" style="border: 0; outline: none; text-decoration: none; vertical-align: top; -ms-interpolation-mode: bicubic;">
               </a>
             </td>
@@ -242,7 +254,8 @@ const getTemplate = async ({
         .replace(/{{src}}/g, item.src)
         .replace(/{{size_banner}}/g, item.width)
         .replace(/{{height}}/g, item.height)
-        .replace(/{{link}}/g, item.link);
+        .replace(/{{link}}/g, item.link)
+        .replace(/{{titleLink}}/g, titleLinks?.[index] || 'event');
     }
   });
   template += formDataStr.join("\n");
